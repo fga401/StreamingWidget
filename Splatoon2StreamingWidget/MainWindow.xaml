@@ -1,0 +1,33 @@
+﻿<Window x:Name="SettingWindow" x:Class="Splatoon2StreamingWidget.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Splatoon2StreamingWidget"
+        mc:Ignorable="d"
+        Title="SettingWindow" Height="270" Width="250" ResizeMode="NoResize">
+    <Grid>
+        <Menu VerticalAlignment="Top" FontSize="12" Margin="0,-10,0,0" Height="37">
+            <MenuItem Header="データ(_D)">
+                <MenuItem x:Name="UpdateRuleMenuItem" Header="ルール更新" Click="UpdateRuleMenuItem_Click" />
+                <MenuItem x:Name="InitializeBattleRecordMenuItem" Header="戦績初期化" Click="InitializeBattleRecordMenuItem_Click" />
+                <MenuItem x:Name="ChangeSessionMenuItem" Header="セッション変更" Click="ChangeSessionMenuItem_Click" />
+            </MenuItem>
+            <MenuItem Header="ヘルプ(_H)">
+                <MenuItem x:Name="VersionInformationMenuItem" Header="バージョン情報" Click="VersionInformationMenuItem_Click" />
+            </MenuItem>
+        </Menu>
+        <Grid x:Name="MainGrid"  Visibility="Hidden">
+            <Button x:Name="UpdateViewerButton" Content="Update Viewer" HorizontalAlignment="Stretch" Margin="40,0,40,10" VerticalAlignment="Bottom" Click="UpdateViewerButton_Click" Cursor="Hand"/>
+            <Label x:Name="UserNameLabel" Content="ユーザー名 : User" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,35,0,0"/>
+            <CheckBox x:Name="AutoUpdateCheckBox" Content="自動更新を行う" HorizontalAlignment="Center" Margin="0,83,0,0" VerticalAlignment="Top" Checked="AutoUpdateCheckBox_Checked" Unchecked="AutoUpdateCheckBox_Unchecked"/>
+            <ComboBox x:Name="AutoUpdateTimeComboBox" HorizontalAlignment="Center" HorizontalContentAlignment="Right" Margin="0,106,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0" SelectionChanged="AutoUpdateTimeComboBox_SelectionChanged"/>
+            <TextBlock x:Name="InformationViewTextBlock" HorizontalAlignment="Center" Margin="0,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        </Grid>
+        <Grid x:Name="SessionGrid">
+            <TextBox x:Name="IksmSessionTextBox" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="10,60,10,50" Background="#FFF2F2F2"/>
+            <Button x:Name="UpdateSessionButton" Content="Update session" HorizontalAlignment="Stretch" Margin="40,0,40,10" VerticalAlignment="Bottom" Click="UpdateSessionButton_Click" FontSize="13"/>
+            <Label Content="「この人にする」のリンク、またはiksmを貼ってください" HorizontalAlignment="Center" Margin="0,33,0,0" VerticalAlignment="Top" FontSize="11"/>
+        </Grid>
+    </Grid>
+</Window>

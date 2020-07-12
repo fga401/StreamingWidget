@@ -2,7 +2,7 @@
 Splatoon2のStreamingWidget(URIは全て削除)
 
 ## アプリケーションファイルダウンロードリンク
-[ダウンロードリンク](https://1drv.ms/u/s!Am_cMZT26Ppfgapixz2tNl0qVqn75g)
+[ダウンロードリンク](https://www.dropbox.com/s/d7b0608995jfqr2/StreamingWidget.zip?dl=0)
 
 β版なので不具合とかあるかもです  
 もしも動かなかったら状況説明してくれると嬉しいです

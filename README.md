@@ -15,6 +15,8 @@ Splatoon2のStreamingWidget
 [ダウンロードリンク](https://github.com/boomxch/StreamingWidget/raw/master/Splatoon2StreamingWidget.exe)
 
 ## 更新情報
+- アプリケーション終了時に完全に終了されない問題を修正
+- 更新時に"old"ファイルではなく、"odd"ファイルを生成する問題を修正
 - 起動に".NET Core 3.1 Runtime"を必須に変更
 - 32bitOSに対応
 - 自動アップデート機能の追加

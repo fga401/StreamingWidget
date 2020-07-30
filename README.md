@@ -9,7 +9,7 @@ Splatoon2のStreamingWidget
 当アプリケーションは以前まで自己完結型アプリケーション(約160MB)でしたが、アップデート機能の追加に伴い、フレームワーク依存型アプリケーション(約8MB)に変更しました。  
 この影響で、アプリケーションの起動には".NET Core 3.1 Runtime"のインストールが必須となっています。  
 下記ダウンロードリンクにアクセスして"Windows"タブ（デフォルト選択）から"Download [あなたのOSのbit数]"を選びインストールを行ってください。  
-[ダウンロードリンク](https://dotnet.microsoft.com/download/dotnet-core/current/runtime)
+[ダウンロードリンク](https://dotnet.microsoft.com/download/dotnet-core/current/runtime){:target="_blank"}
 
 ## アプリケーションファイルダウンロードリンク
 [ダウンロードリンク](https://github.com/boomxch/StreamingWidget/raw/master/Splatoon2StreamingWidget.exe)

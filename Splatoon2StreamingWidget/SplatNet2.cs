@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
-using System.Windows;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Threading.Tasks;
 
+// 画像認識、アニメーション、時間で自動更新、xamlとずれている（上の部分の解像度？）、非同期、SplatNet2SessionToken組み込み, 計測中から終わったときにdiffが大変なことになりそう
 namespace Splatoon2StreamingWidget
 {
     public class PlayerData
     {
+        // ここに武器の調子メータのデータも入れる
         public string[] udemae { get; set; }
         public float[] xPower { get; set; }
         public float xPowerDiff = 0;
@@ -39,17 +42,16 @@ namespace Splatoon2StreamingWidget
             {"tower_control",1},
             {"rainmaker",2},
             {"clam_blitz",3},
+            {"turf_war",3},
         };
 
         public readonly string[] ruleNamesJP = new[] { "ガチエリア", "ガチヤグラ", "ガチホコバトル", "ガチアサリ" };
         public PlayerData PlayerData { get; private set; }
         public int lastBattleRule { get; private set; }
-        private int lastBattleNumber;
+        public int lastBattleNumber { get; private set; }
         private List<SplatNet2DataStructure.Schedules.GachiSchedule> schedules = new List<SplatNet2DataStructure.Schedules.GachiSchedule>();
         private readonly string iksmSession;
-        private readonly HttpClient httpClient;
-        private readonly HttpClientHandler handler;
-        private readonly CookieContainer cc;
+        private readonly Cookie Cookie;
         private const string ApiUriPrefix = "";
         private const decimal SplatNet2Time2020 = 1577836800;
         private readonly DateTime DateTime2020 = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -58,75 +60,96 @@ namespace Splatoon2StreamingWidget
         {
             iksmSession = sessionID;
 
-            cc = new CookieContainer();
-            cc.Add(new Uri("https://app.splatoon2.nintendo.net"), new Cookie("iksm_session", iksmSession));
-            handler = new HttpClientHandler { CookieContainer = cc };
-            httpClient = new HttpClient(handler);
+            Cookie = new Cookie("iksm_session", iksmSession);
         }
 
-        ~SplatNet2()
+        public async Task<bool> TryInitializePlayerData()
         {
-            httpClient.Dispose();
-            handler.Dispose();
-        }
-
-        public bool TryInitializePlayerData()
-        {
+            SplatNet2DataStructure.Records.PersonalRecords.PlayerRecords udemaeData;
             try
             {
-                var result = httpClient.GetStringAsync(ApiUriPrefix + "records").Result;
-                var udemaeData = JsonConvert.DeserializeObject<SplatNet2DataStructure.Records>(result).records.player;
-                PlayerData = new PlayerData(udemaeData.nickname, udemaeData.principal_id);
-
-                string GetUdemaeName(SplatNet2DataStructure.Records.PersonalRecords.PlayerRecords.RuleData r) => r.name == null ? "-" : (r.name + r.s_plus_number);
-                PlayerData.udemae = new[]
-                {
-                    GetUdemaeName(udemaeData.udemae_zones),
-                    GetUdemaeName(udemaeData.udemae_tower),
-                    GetUdemaeName(udemaeData.udemae_rainmaker),
-                    GetUdemaeName(udemaeData.udemae_clam),
-                };
-
-                result = httpClient.GetStringAsync(ApiUriPrefix + "x_power_ranking/" + GetSeason() + "/summary").Result;
-                var powerData = JsonConvert.DeserializeObject<SplatNet2DataStructure.XPowerRanking>(result);
-
-                // is_number_reachedの詳細が不明
-                float GetXPower(SplatNet2DataStructure.Records.PersonalRecords.PlayerRecords.RuleData r, SplatNet2DataStructure.XPowerRanking.RuleStats m) => r.is_x && m.my_ranking != null ? float.Parse(m.my_ranking.x_power) : 0;
-                PlayerData.xPower = new[]
-                {
-                    GetXPower(udemaeData.udemae_zones,powerData.splat_zones),
-                    GetXPower(udemaeData.udemae_tower,powerData.tower_control),
-                    GetXPower(udemaeData.udemae_rainmaker,powerData.rainmaker),
-                    GetXPower(udemaeData.udemae_clam,powerData.clam_blitz)
-                };
-
-                result = httpClient.GetStringAsync(ApiUriPrefix + "results").Result;
-                var battleData = JsonConvert.DeserializeObject<SplatNet2DataStructure.Results>(result).results;
-                lastBattleNumber = battleData.Max(a => a.battle_number);
+                var result = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.Records>(ApiUriPrefix + "records", Cookie);
+                udemaeData = result.records.player;
             }
             catch (HttpRequestException)
             {
-                MessageBox.Show("セッションの有効期限が切れているか,無効な値です。\niksm_sessionを再設定してください。", "無効なセッション情報", MessageBoxButton.OK);
+                await LogManager.WriteLogAsync("Failed to get \"records\"");
                 PlayerData = null;
                 return false;
             }
             catch (JsonException)
             {
-                MessageBox.Show("セッションの有効期限が切れているか,無効な値です。\niksm_sessionを再設定してください。", "無効なセッション情報", MessageBoxButton.OK);
+                await LogManager.WriteLogAsync("Failed to convert \"records\"");
                 PlayerData = null;
                 return false;
             }
-            catch (Exception) // これ本当はダメ
+
+            PlayerData = new PlayerData(udemaeData.nickname, udemaeData.principal_id);
+
+            string GetUdemaeName(SplatNet2DataStructure.Records.PersonalRecords.PlayerRecords.RuleData r) => r.name == null ? "-" : (r.name + r.s_plus_number);
+            PlayerData.udemae = new[]
             {
-                MessageBox.Show("セッションの有効期限が切れているか,無効な値です。\niksm_sessionを再設定してください。", "無効なセッション情報", MessageBoxButton.OK);
+                GetUdemaeName(udemaeData.udemae_zones),
+                GetUdemaeName(udemaeData.udemae_tower),
+                GetUdemaeName(udemaeData.udemae_rainmaker),
+                GetUdemaeName(udemaeData.udemae_clam),
+            };
+
+            SplatNet2DataStructure.XPowerRanking powerData;
+            try
+            {
+                powerData = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.XPowerRanking>(ApiUriPrefix + "x_power_ranking/" + GetSeason() + "/summary", Cookie);
+            }
+            catch (HttpRequestException)
+            {
+                await LogManager.WriteLogAsync("Failed to get \"XPowerRanking\"");
                 PlayerData = null;
                 return false;
             }
+            catch (JsonException)
+            {
+                await LogManager.WriteLogAsync("Failed to convert \"XPowerRanking\"");
+                PlayerData = null;
+                return false;
+            }
+
+            // parse時にCultureInfo.InvariantCultureを付けないとフランスの方を筆頭にバグる
+            float GetXPower(SplatNet2DataStructure.Records.PersonalRecords.PlayerRecords.RuleData r, SplatNet2DataStructure.XPowerRanking.RuleStats m) => r.is_x && m.my_ranking != null ? float.Parse(m.my_ranking.x_power, CultureInfo.InvariantCulture) : 0;
+            PlayerData.xPower = new[]
+            {
+                GetXPower(udemaeData.udemae_zones,powerData.splat_zones),
+                GetXPower(udemaeData.udemae_tower,powerData.tower_control),
+                GetXPower(udemaeData.udemae_rainmaker,powerData.rainmaker),
+                GetXPower(udemaeData.udemae_clam,powerData.clam_blitz)
+            };
+
+            List<SplatNet2DataStructure.Results.BattleResult> battleData;
+            try
+            {
+                var result2 = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.Results>(ApiUriPrefix + "results", Cookie);
+                battleData = result2.results;
+            }
+            catch (HttpRequestException)
+            { 
+                await LogManager.WriteLogAsync("Failed to get \"results\"");
+                PlayerData = null;
+                return false;
+            }
+            catch (JsonException)
+            {
+                await LogManager.WriteLogAsync("Failed to convert \"results\"");
+                PlayerData = null;
+                return false;
+            }
+
+            lastBattleNumber = battleData.Max(a => a.battle_number);
+
+            lastBattleRule = await GetSchedule();
 
             return true;
         }
 
-        public int GetSchedule()
+        public async Task<int> GetSchedule()
         {
             var splatNet2TimeNow = (decimal)Math.Floor((DateTime.UtcNow - DateTime2020).TotalSeconds) + SplatNet2Time2020;
 
@@ -154,23 +177,23 @@ namespace Splatoon2StreamingWidget
             var ans = GetRuleFromSchedule();
             if (ans != -1) return ans;
 
-            var result = httpClient.GetStringAsync(ApiUriPrefix + "schedules").Result;
-            schedules = JsonConvert.DeserializeObject<SplatNet2DataStructure.Schedules>(result).gachi;
+            var res = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.Schedules>(ApiUriPrefix + "schedules", Cookie);
+            schedules = res.gachi;
             schedules.Sort((a, b) => a.start_time - b.start_time > 0 ? 1 : -1);
 
             return GetRuleFromSchedule();
         }
 
-        public void UpdatePlayerData()
+        public async Task UpdatePlayerData()
         {
-            var result = httpClient.GetStringAsync(ApiUriPrefix + "results").Result;
-            var battleData = JsonConvert.DeserializeObject<SplatNet2DataStructure.Results>(result).results;
+            var res = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.Results>(ApiUriPrefix + "results", Cookie);
+            var battleData = res.results;
             battleData = battleData.Where(v => v.battle_number > lastBattleNumber).OrderBy(a => a.battle_number).ToList();
             if (battleData.Count == 0) return;
 
             if (battleData.Last().battle_number - lastBattleNumber > 50)
             {
-                TryInitializePlayerData();
+                await TryInitializePlayerData();
                 return;
             }
 
@@ -188,7 +211,7 @@ namespace Splatoon2StreamingWidget
                 if (item.game_mode.key != "gachi") continue;
 
                 PlayerData.xPowerDiff = 0;
-                if (!float.TryParse(item.x_power, out var xPower)) continue;
+                if (!float.TryParse(item.x_power, NumberStyles.Number, CultureInfo.InvariantCulture, out var xPower)) continue;
 
                 if (ruleNow == Rules[item.rule.key])
                     PlayerData.xPowerDiff = xPower - PlayerData.xPower[ruleNow];
@@ -199,6 +222,23 @@ namespace Splatoon2StreamingWidget
             PlayerData.KillCountN = battleData.Last().player_result.kill_count;
             PlayerData.AssistCountN = battleData.Last().player_result.assist_count;
             PlayerData.DeathCountN = battleData.Last().player_result.death_count;
+        }
+
+        public async Task<float> GetLoseXP()
+        {
+            var rule = await GetSchedule();
+            var powerData = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.XPowerRanking>(ApiUriPrefix + "x_power_ranking/" + GetSeason() + "/summary", Cookie);
+
+            float GetXPower(string r, SplatNet2DataStructure.XPowerRanking.RuleStats m) => r == "X" && m.my_ranking != null ? float.Parse(m.my_ranking.x_power, CultureInfo.InvariantCulture) : 0;
+            var xPower = new[]
+            {
+                GetXPower(PlayerData.udemae[0], powerData.splat_zones),
+                GetXPower(PlayerData.udemae[1], powerData.tower_control),
+                GetXPower(PlayerData.udemae[2], powerData.rainmaker),
+                GetXPower(PlayerData.udemae[3], powerData.clam_blitz)
+            };
+
+            return (xPower[rule] * 10 - PlayerData.xPower[rule] * 10) / 10;
         }
 
         private string GetSeason()

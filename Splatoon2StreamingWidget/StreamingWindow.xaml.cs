@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -54,10 +55,7 @@ namespace Splatoon2StreamingWidget
             WLLabel.Content = "0%";
         }
 
-        protected override void OnClosed(EventArgs e)
-        {
-            IsClosed = true;
-        }
+        protected override void OnClosed(EventArgs e) => IsClosed = true;
 
         public void UpdateWindow(PlayerData playerData, int ruleIndex, string ruleName)
         {
@@ -96,8 +94,8 @@ namespace Splatoon2StreamingWidget
             contentNow.killCountN = 0;
             contentNow.assistCountN = 0;
             contentNow.deathCountN = 0;
-            contentNow.kdRateN = float.Parse(KDLabelN.Content.ToString());
-            contentNow.wlRate = int.Parse(WLLabel.Content.ToString().TrimEnd('%'));
+            contentNow.kdRateN = float.Parse(KDLabelN.Content.ToString(), CultureInfo.InvariantCulture);
+            contentNow.wlRate = int.Parse(WLLabel.Content.ToString().TrimEnd('%'), CultureInfo.InvariantCulture);
 
             animationTimes = 100;
             _animationDispatcherTimer.Start();
@@ -110,7 +108,7 @@ namespace Splatoon2StreamingWidget
             if (playerData.udemae[ruleIndex] != "X")
                 XPowerLabel.Content = playerData.udemae[ruleIndex].Substring(1);
             else
-                XPowerLabel.Content = playerData.udemae[ruleIndex] != "X" ? "" : playerData.xPower[ruleIndex] == 0 ? "Calculating" : $"{playerData.xPower[ruleIndex]}";
+                XPowerLabel.Content = playerData.udemae[ruleIndex] != "X" ? "" : playerData.xPower[ruleIndex] == 0 ? "Calculating" : $"{playerData.xPower[ruleIndex]:F1}";
 
             XPowerSubtractLabel.Content = "";
             KALabelN.Content = "0(0)";

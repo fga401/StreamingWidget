@@ -6,7 +6,24 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon />
     <Win32Resource />
+    <Version>1.1.2</Version>
+    <Authors>sisno_boomx</Authors>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\ikamodoki.ttf" />
+    <None Remove="Resources\Splatfont2.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\ikamodoki.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Splatfont2.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="bin\Debug\netcoreapp3.1\data\config.xml" />
@@ -14,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="data\" />
-    <Folder Include="Resources\" />
   </ItemGroup>
 
   <ItemGroup>

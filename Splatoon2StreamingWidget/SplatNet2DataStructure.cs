@@ -4,6 +4,109 @@ namespace Splatoon2StreamingWidget
 {
     public static class SplatNet2DataStructure
     {
+        #region StreamingWidgetGitHub
+        public class VersionData
+        {
+            public string version { get; set; }
+        }
+        #endregion
+
+        #region SessionToken
+        public class SessionToken
+        {
+            public string code { get; set; }
+            public string session_token { get; set; }
+        }
+
+        public class AccessToken
+        {
+            public string access_token { get; set; }
+            public int expires_in { get; set; }
+            public string id_token { get; set; }
+        }
+
+        public class UserInfo
+        {
+            public string birthday { get; set; }
+            public string country { get; set; }
+            public long createdAt { get; set; }
+            public string gender { get; set; }
+            public string language { get; set; }
+            public string nickname { get; set; }
+            public string screenname { get; set; }
+        }
+
+        public class SplatoonToken
+        {
+            public string correlationId { get; set; }
+            public int status { get; set; }
+            public TokenResult result { get; set; }
+
+            public class TokenResult
+            {
+                public UserData user { get; set; }
+
+                public WebApiServerCredential webApiServerCredential { get; set; }
+                public FirebaseCredential firebaseCredential { get; set; }
+
+                public class UserData
+                {
+                    public string name { get; set; }
+                    public string id { get; set; }
+                    public string supportId { get; set; }
+                    public string imageUri { get; set; }
+                    public MemberShip membership { get; set; }
+
+                    public class MemberShip
+                    {
+                        public bool active { get; set; }
+                    }
+                }
+
+                public class WebApiServerCredential
+                {
+                    public string accessToken { get; set; }
+                    public int expiresIn { get; set; }
+                }
+
+                public class FirebaseCredential
+                {
+                    public string accessToken { get; set; }
+                    public int expiresIn { get; set; }
+                }
+            }
+        }
+
+        public class WebServiceToken
+        {
+            public WebServiceTokenResult result { get; set; }
+
+            public class WebServiceTokenResult
+            {
+                public string accessToken { get; set; }
+            }
+        }
+
+        public class FlapgResult
+        {
+            public FlapgInnerResult result { get; set; }
+
+            public class FlapgInnerResult
+            {
+                public string f { get; set; }
+                public string p1 { get; set; }
+                public string p2 { get; set; }
+                public string p3 { get; set; }
+            }
+        }
+
+        public class S2SResult
+        {
+            public string hash { get; set; }
+        }
+        #endregion
+
+        #region SplatNet2
         public class Records
         {
             public PersonalRecords records;
@@ -116,5 +219,6 @@ namespace Splatoon2StreamingWidget
                 }
             }
         }
+        #endregion
     }
 }

@@ -1,10 +1,20 @@
 # StreamingWidget
-Splatoon2のStreamingWidget(URIは全て削除)
+Splatoon2のStreamingWidget
+
+## 注意事項
+- Windows用
+- ".NET Core 3.1 Runtime"のインストールが必須
+
+## アプリの起動に必要なランタイム
+当アプリケーションは以前まで自己完結型アプリケーション(約160MB)でしたが、アップデート機能の追加に伴い、フレームワーク依存型アプリケーション(約8MB)に変更しました。 この影響で、ユーザにはお手数おかけしますが、アプリケーションの起動には".NET Core 3.1 Runtime"のインストールが必須となっています。 下記ダウンロードリンクにアクセスして"Windows"タブ（デフォルト選択）から"Download [あなたのOSのbit数]"を選びインストールを行ってください。  
+[ダウンロードリンク](https://dotnet.microsoft.com/download/dotnet-core/current/runtime)
 
 ## アプリケーションファイルダウンロードリンク
 [ダウンロードリンク]()
 
 ## 更新情報
+- 起動に".NET Core 3.1 Runtime"を必須に変更
+- 32bitOSに対応
 - 自動アップデート機能の追加
 - 再ログインが必要になる回数を削減
 - 小数点をドットではなく、カンマで表す国での表示に対応

@@ -39,3 +39,6 @@ Splatoon2のStreamingWidget
 - 自動更新をオンにするか手動でボタンを押すとデータが更新される
 - Finishが表示されてすぐに更新可能です
 - 何かあったら"data/log.txt"を添付して教えてほしい
+
+## 他ツール
+- [SnipeChecker](https://github.com/boomxch/StreamingWidget/blob/master/tools/SnipeChecker/About.md)

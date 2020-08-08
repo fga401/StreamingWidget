@@ -61,6 +61,12 @@ namespace Splatoon2StreamingWidget
             return Handler.CookieContainer;
         }
 
+        public static async Task<string> GetStringAsyncWithCookieContainer(string uri, Cookie cookie)
+        {
+            Handler.CookieContainer.Add(new Uri(""), cookie);
+            return await Client.GetStringAsync(uri);
+        }
+
         public static async Task<TJson> GetDeserializedJsonAsyncWithCookieContainer<TJson>(string uri, Cookie cookie)
         {
             Handler.CookieContainer.Add(new Uri(""), cookie);

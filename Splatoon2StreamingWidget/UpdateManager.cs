@@ -9,9 +9,9 @@ namespace Splatoon2StreamingWidget
 {
     public static class UpdateManager
     {
-        public const string VersionNumber = "1.1.2";
+        public const string VersionNumber = "1.2.0";
         private static string newVersionNumber = "";
-        private static UpdateWindow _updateWindow = new UpdateWindow();
+        private static UpdateWindow _updateWindow;
 
         /// <summary>
         /// アップデートをGitHub上にあるデータを参照し、チェックする
@@ -31,7 +31,7 @@ namespace Splatoon2StreamingWidget
             var indexMD = await HttpManager.GetStringAsync(url);
             var updateInfo = Regex.Match(indexMD, "## 更新情報\\n(- ([^\\n]*)\\n)*\\n").Groups[2].Captures.Select(v => v.Value.TrimEnd('\n'));
             var updateInfoText = "StreamingWidget  Ver " + newVersionNumber + "\n\n更新内容\n・" + updateInfo.Aggregate((text, s) => text + "\n・" + s);
-            _updateWindow.UpdateTextBlock.Text = updateInfoText;
+            _updateWindow = new UpdateWindow {UpdateTextBlock = {Text = updateInfoText}};
             _updateWindow.ShowDialog();
         }
 

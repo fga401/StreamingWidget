@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 // 画像認識、アニメーション、時間で自動更新、xamlとずれている（上の部分の解像度？）、非同期、SplatNet2SessionToken組み込み, 計測中から終わったときにdiffが大変なことになりそう
 namespace Splatoon2StreamingWidget
@@ -13,9 +15,23 @@ namespace Splatoon2StreamingWidget
     public class PlayerData
     {
         // ここに武器の調子メータのデータも入れる
-        public string[] udemae { get; set; }
-        public float[] xPower { get; set; }
-        public float xPowerDiff = 0;
+        // gachi
+        public string[] Udemae { get; set; }
+        public float[] XPower { get; set; }
+        public float XPowerDiff = 0;
+        // league
+        public float LeaguePower = 0;
+        public float LeaguePowerDiff = 0;
+        // regular
+        public float WinMeter = 0;
+        public Uri ImageUri;
+        public int PaintPoint = 0;
+        // private
+        public int KillMVP = 0;
+        public int DeathMVP = 0;
+        public int KDMVP = 0;
+        public int PointMVP = 0;
+        // common
         public int KillCount = 0;
         public int AssistCount = 0;
         public int DeathCount = 0;
@@ -34,6 +50,30 @@ namespace Splatoon2StreamingWidget
         }
     }
 
+    public class RuleData
+    {
+        public GameMode Mode;
+        public int RuleIndex;
+        public string Name;
+
+        internal RuleData(GameMode mode, int ruleIndex, string name)
+        {
+            Mode = mode;
+            RuleIndex = ruleIndex;
+            Name = name;
+        }
+
+        public enum GameMode
+        {
+            Gachi,
+            Private,
+            League2,
+            League4,
+            Regular,
+            Festival
+        }
+    }
+
     public class SplatNet2
     {
         public readonly Dictionary<string, int> Rules = new Dictionary<string, int>()
@@ -42,12 +82,12 @@ namespace Splatoon2StreamingWidget
             {"tower_control",1},
             {"rainmaker",2},
             {"clam_blitz",3},
-            {"turf_war",3},
+            {"turf_war",4}
         };
 
-        public readonly string[] ruleNamesJP = new[] { "ガチエリア", "ガチヤグラ", "ガチホコバトル", "ガチアサリ" };
+        public readonly string[] ruleNamesJP = new[] { "ガチエリア", "ガチヤグラ", "ガチホコバトル", "ガチアサリ", "ナワバリバトル" };
         public PlayerData PlayerData { get; private set; }
-        public int lastBattleRule { get; private set; }
+        public RuleData RuleData { get; private set; }
         public int lastBattleNumber { get; private set; }
         private List<SplatNet2DataStructure.Schedules.GachiSchedule> schedules = new List<SplatNet2DataStructure.Schedules.GachiSchedule>();
         private readonly string iksmSession;
@@ -74,20 +114,18 @@ namespace Splatoon2StreamingWidget
             catch (HttpRequestException)
             {
                 await LogManager.WriteLogAsync("Failed to get \"records\"");
-                PlayerData = null;
                 return false;
             }
             catch (JsonException)
             {
                 await LogManager.WriteLogAsync("Failed to convert \"records\"");
-                PlayerData = null;
                 return false;
             }
 
             PlayerData = new PlayerData(udemaeData.nickname, udemaeData.principal_id);
 
             string GetUdemaeName(SplatNet2DataStructure.Records.PersonalRecords.PlayerRecords.RuleData r) => r.name == null ? "-" : (r.name + r.s_plus_number);
-            PlayerData.udemae = new[]
+            PlayerData.Udemae = new[]
             {
                 GetUdemaeName(udemaeData.udemae_zones),
                 GetUdemaeName(udemaeData.udemae_tower),
@@ -103,19 +141,17 @@ namespace Splatoon2StreamingWidget
             catch (HttpRequestException)
             {
                 await LogManager.WriteLogAsync("Failed to get \"XPowerRanking\"");
-                PlayerData = null;
                 return false;
             }
             catch (JsonException)
             {
                 await LogManager.WriteLogAsync("Failed to convert \"XPowerRanking\"");
-                PlayerData = null;
                 return false;
             }
 
             // parse時にCultureInfo.InvariantCultureを付けないとフランスの方を筆頭にバグる
             float GetXPower(SplatNet2DataStructure.Records.PersonalRecords.PlayerRecords.RuleData r, SplatNet2DataStructure.XPowerRanking.RuleStats m) => r.is_x && m.my_ranking != null ? float.Parse(m.my_ranking.x_power, CultureInfo.InvariantCulture) : 0;
-            PlayerData.xPower = new[]
+            PlayerData.XPower = new[]
             {
                 GetXPower(udemaeData.udemae_zones,powerData.splat_zones),
                 GetXPower(udemaeData.udemae_tower,powerData.tower_control),
@@ -130,26 +166,28 @@ namespace Splatoon2StreamingWidget
                 battleData = result2.results;
             }
             catch (HttpRequestException)
-            { 
+            {
                 await LogManager.WriteLogAsync("Failed to get \"results\"");
-                PlayerData = null;
                 return false;
             }
             catch (JsonException)
             {
                 await LogManager.WriteLogAsync("Failed to convert \"results\"");
-                PlayerData = null;
                 return false;
             }
 
             lastBattleNumber = battleData.Max(a => a.battle_number);
+#if DEBUG
+            lastBattleNumber = battleData.Max(a => a.battle_number) - 50;
+#endif
 
-            lastBattleRule = await GetSchedule();
+            var ruleIndex = await GetGachiSchedule();
+            RuleData = new RuleData(RuleData.GameMode.Gachi, ruleIndex, ruleNamesJP[ruleIndex]);
 
             return true;
         }
 
-        public async Task<int> GetSchedule()
+        public async Task<int> GetGachiSchedule()
         {
             var splatNet2TimeNow = (decimal)Math.Floor((DateTime.UtcNow - DateTime2020).TotalSeconds) + SplatNet2Time2020;
 
@@ -189,6 +227,9 @@ namespace Splatoon2StreamingWidget
             var res = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.Results>(ApiUriPrefix + "results", Cookie);
             var battleData = res.results;
             battleData = battleData.Where(v => v.battle_number > lastBattleNumber).OrderBy(a => a.battle_number).ToList();
+#if DEBUG
+            battleData = battleData.Where(v => v.battle_number == lastBattleNumber + 1).OrderBy(a => a.battle_number).ToList();
+#endif
             if (battleData.Count == 0) return;
 
             if (battleData.Last().battle_number - lastBattleNumber > 50)
@@ -198,47 +239,128 @@ namespace Splatoon2StreamingWidget
             }
 
             lastBattleNumber = battleData.Last().battle_number;
-            lastBattleRule = Rules[battleData.Last().rule.key];
-            var ruleNow = lastBattleRule;
-            foreach (var item in battleData)
-            {
-                PlayerData.KillCount += item.player_result.kill_count;
-                PlayerData.AssistCount += item.player_result.assist_count;
-                PlayerData.DeathCount += item.player_result.death_count;
-                if (item.my_team_count > item.other_team_count) PlayerData.WinCount++;
-                else PlayerData.LoseCount++;
-
-                if (item.game_mode.key != "gachi") continue;
-
-                PlayerData.xPowerDiff = 0;
-                if (!float.TryParse(item.x_power, NumberStyles.Number, CultureInfo.InvariantCulture, out var xPower)) continue;
-
-                if (ruleNow == Rules[item.rule.key])
-                    PlayerData.xPowerDiff = xPower - PlayerData.xPower[ruleNow];
-
-                PlayerData.xPower[Rules[item.rule.key]] = xPower;
-            }
-
+            var ruleNow = Rules[battleData.Last().rule.key];
             PlayerData.KillCountN = battleData.Last().player_result.kill_count;
             PlayerData.AssistCountN = battleData.Last().player_result.assist_count;
             PlayerData.DeathCountN = battleData.Last().player_result.death_count;
+            PlayerData.PaintPoint = battleData.Last().player_result.game_paint_point;
+
+            foreach (var item in battleData)
+            {
+                // common
+                PlayerData.KillCount += item.player_result.kill_count;
+                PlayerData.AssistCount += item.player_result.assist_count;
+                PlayerData.DeathCount += item.player_result.death_count;
+                if (item.my_team_result.key == "victory") PlayerData.WinCount++;
+                else PlayerData.LoseCount++;
+
+                RuleData.RuleIndex = Rules[item.rule.key];
+
+                switch (item.game_mode.key)
+                {
+                    // XPについての処理
+                    case "gachi":
+                        if (item.player_result.player.udemae.is_x)
+                        {
+                            PlayerData.XPowerDiff = 0;
+                            var xPower = item.x_power ?? 0;
+
+                            // 計測が終わった直後はDiffの表示は行わない
+                            if (ruleNow == Rules[item.rule.key] && PlayerData.XPower[ruleNow] != 0)
+                                PlayerData.XPowerDiff = xPower - PlayerData.XPower[ruleNow];
+
+                            PlayerData.XPower[Rules[item.rule.key]] = xPower;
+                        }
+                        else
+                        {
+                            // ウデマエ更新
+                            PlayerData.Udemae[Rules[item.rule.key]] = item.player_result.player.udemae.name + item.player_result.player.udemae.s_plus_number;
+                        }
+
+                        RuleData.Mode = RuleData.GameMode.Gachi;
+                        RuleData.Name = ruleNamesJP[RuleData.RuleIndex];
+                        break;
+
+                    // LPについての処理
+                    case "league_pair":
+                        PlayerData.LeaguePowerDiff = 0;
+                        var lp2 = item.league_point ?? 0;
+
+                        if (PlayerData.LeaguePower != 0)
+                            PlayerData.LeaguePowerDiff = lp2 - PlayerData.LeaguePower;
+
+                        PlayerData.LeaguePower = lp2;
+
+                        RuleData.Mode = RuleData.GameMode.League2;
+                        RuleData.Name = "リーグマッチ";
+                        break;
+
+                    // LPについての処理
+                    case "league_team":
+                        PlayerData.LeaguePowerDiff = 0;
+                        var lp4 = item.league_point ?? 0;
+
+                        if (PlayerData.LeaguePower != 0)
+                            PlayerData.LeaguePowerDiff = lp4 - PlayerData.LeaguePower;
+
+                        PlayerData.LeaguePower = lp4;
+
+                        RuleData.Mode = RuleData.GameMode.League4;
+                        RuleData.Name = "リーグマッチ";
+                        break;
+
+                    // いくつかの項目についてMVPの回数を算出
+                    case "private":
+                        var detailResult = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.DetailResult>(ApiUriPrefix + "results/" + item.battle_number, Cookie);
+
+                        // 味方チーム内でのMVP 1on1の時は常にプラスになる 敵チームとの複合にした方が良い？
+                        if (!detailResult.my_team_members.Any(v => v.kill_count > item.player_result.kill_count))
+                            PlayerData.KillMVP++;
+                        if (!detailResult.my_team_members.Any(v => v.death_count < item.player_result.death_count))
+                            PlayerData.DeathMVP++;
+                        if (!detailResult.my_team_members.Any(v => (float)v.kill_count / v.death_count > (float)item.player_result.kill_count / item.player_result.death_count))
+                            PlayerData.KDMVP++;
+                        if (!detailResult.my_team_members.Any(v => v.game_paint_point > item.player_result.game_paint_point))
+                            PlayerData.PointMVP++;
+
+                        RuleData.Mode = RuleData.GameMode.Private;
+                        RuleData.Name = "プライベートマッチ";
+                        break;
+
+                    // 調子メータについての処理
+                    case "regular":
+                        var winMeter = item.win_meter ?? 0;
+                        PlayerData.WinMeter = winMeter;
+                        PlayerData.ImageUri = new Uri(ApiUriPrefix.Substring(0, ApiUriPrefix.Length - 5) + item.player_result.player.weapon.image);
+
+                        RuleData.Mode = RuleData.GameMode.Regular;
+                        RuleData.Name = "ナワバリバトル";
+                        break;
+
+                    // fes
+                    default:
+                        RuleData.Mode = RuleData.GameMode.Festival;
+                        RuleData.Name = "フェス";
+                        break;
+                }
+            }
         }
 
         public async Task<float> GetLoseXP()
         {
-            var rule = await GetSchedule();
+            var rule = await GetGachiSchedule();
             var powerData = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.XPowerRanking>(ApiUriPrefix + "x_power_ranking/" + GetSeason() + "/summary", Cookie);
 
             float GetXPower(string r, SplatNet2DataStructure.XPowerRanking.RuleStats m) => r == "X" && m.my_ranking != null ? float.Parse(m.my_ranking.x_power, CultureInfo.InvariantCulture) : 0;
             var xPower = new[]
             {
-                GetXPower(PlayerData.udemae[0], powerData.splat_zones),
-                GetXPower(PlayerData.udemae[1], powerData.tower_control),
-                GetXPower(PlayerData.udemae[2], powerData.rainmaker),
-                GetXPower(PlayerData.udemae[3], powerData.clam_blitz)
+                GetXPower(PlayerData.Udemae[0], powerData.splat_zones),
+                GetXPower(PlayerData.Udemae[1], powerData.tower_control),
+                GetXPower(PlayerData.Udemae[2], powerData.rainmaker),
+                GetXPower(PlayerData.Udemae[3], powerData.clam_blitz)
             };
 
-            return (xPower[rule] * 10 - PlayerData.xPower[rule] * 10) / 10;
+            return (xPower[rule] * 10 - PlayerData.XPower[rule] * 10) / 10;
         }
 
         private string GetSeason()

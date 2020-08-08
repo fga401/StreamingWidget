@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace Splatoon2StreamingWidget
@@ -31,6 +32,7 @@ namespace Splatoon2StreamingWidget
             public int deathCountN { get; set; }
             public float kdRateN { get; set; }
             public int wlRate { get; set; }
+            public int paintPoint { get; set; }
         }
 
         public StreamingWindow()
@@ -57,24 +59,92 @@ namespace Splatoon2StreamingWidget
 
         protected override void OnClosed(EventArgs e) => IsClosed = true;
 
-        public void UpdateWindow(PlayerData playerData, int ruleIndex, string ruleName)
+        private void UpdateXPSubtractLabelColor(float diff) => XPowerSubtractLabel.Foreground = diff >= 0 ? Brushes.LimeGreen : Brushes.Red;
+
+        public void UpdateWindow(PlayerData playerData, RuleData ruleData)
         {
             if (battleNum == playerData.WinCount + playerData.LoseCount) return;
+            // common
             battleNum = playerData.WinCount + playerData.LoseCount;
-
-            UdemaeLabel.Content = playerData.udemae[ruleIndex][0];
-            if (playerData.udemae[ruleIndex] != "X")
-                XPowerLabel.Content = playerData.udemae[ruleIndex].Substring(1);
-            else
-                XPowerLabel.Content = playerData.udemae[ruleIndex] != "X" ? "" : playerData.xPower[ruleIndex] == 0 ? "Calculating" : $"{playerData.xPower[ruleIndex] - playerData.xPowerDiff:F1}";
-            XPowerSubtractLabel.Foreground = playerData.xPowerDiff >= 0 ? Brushes.DeepSkyBlue : Brushes.Red;
-            RuleLabel.Content = ruleName;
             WLabel.Content = playerData.WinCount;
             LLabel.Content = playerData.LoseCount;
+            RuleLabel.Content = ruleData.Name;
+            UdemaeLabel.Content = "";
+            XPowerLabel.Content = "";
+            XPowerSubtractLabel.Content = "";
+            PaintPointLabel.Content = "";
+            WeaponImage.Source = null;
+            MVPLabel.Visibility = Visibility.Hidden;
+            PaintPointLabel.Visibility = Visibility.Hidden;
+            contentTarget.xpower = 0; // アニメーションの処理をストップ
+
+            // ウデマエラベル、XPラベル、XPDiffラベル、色の処理
+            switch (ruleData.Mode)
+            {
+                case RuleData.GameMode.Gachi:
+                    UdemaeLabel.Content = playerData.Udemae[ruleData.RuleIndex][0];
+                    if (playerData.Udemae[ruleData.RuleIndex] != "X")
+                        XPowerLabel.Content = playerData.Udemae[ruleData.RuleIndex].Substring(1); // -、+、数字
+                    else if (playerData.XPower[ruleData.RuleIndex] == 0)
+                        XPowerLabel.Content = "Calculating";
+                    UpdateXPSubtractLabelColor(playerData.XPowerDiff);
+                    XPowerLabel.Margin = new Thickness(90, 35, 0, 0);
+                    XPowerSubtractLabel.Margin = new Thickness(370, 91, 0, 0);
+                    RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(0xE2, 0x56, 0x2C));
+
+                    // コンテンツデータの更新
+                    contentTarget.xpower = playerData.XPower[ruleData.RuleIndex];
+                    contentTarget.xpowerSubtract = playerData.XPowerDiff;
+                    contentNow.xpower = playerData.XPowerDiff== 0 ? 0 : playerData.XPower[ruleData.RuleIndex] - playerData.XPowerDiff; // 計測終了直後の場合と分ける
+                    contentNow.xpowerSubtract = 0;
+                    break;
+                case RuleData.GameMode.Private:
+                    PaintPointLabel.Visibility = Visibility.Visible;
+                    XPowerLabel.Content = playerData.KDMVP;
+                    MVPLabel.Visibility = Visibility.Visible;
+                    XPowerLabel.Margin = new Thickness(285, 35, 0, 0);
+                    RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(194, 0, 255));
+                    break;
+                case RuleData.GameMode.League2:
+                    if (playerData.LeaguePower == 0)
+                        XPowerLabel.Content = "Calculating";
+                    UpdateXPSubtractLabelColor(playerData.LeaguePowerDiff);
+                    XPowerLabel.Margin = new Thickness(40, 35, 0, 0);
+                    XPowerSubtractLabel.Margin = new Thickness(320, 91, 0, 0);
+                    RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(255, 1, 206));
+
+                    // コンテンツデータの更新
+                    contentTarget.xpower = playerData.LeaguePower;
+                    contentTarget.xpowerSubtract = playerData.LeaguePowerDiff;
+                    contentNow.xpower = playerData.LeaguePowerDiff == 0 ? 0 : playerData.LeaguePower - playerData.LeaguePowerDiff;
+                    contentNow.xpowerSubtract = 0;
+                    break;
+                case RuleData.GameMode.League4:
+                    if (playerData.LeaguePower == 0)
+                        XPowerLabel.Content = "Calculating";
+                    UpdateXPSubtractLabelColor(playerData.LeaguePowerDiff);
+                    XPowerLabel.Margin = new Thickness(40, 35, 0, 0);
+                    XPowerSubtractLabel.Margin = new Thickness(320, 91, 0, 0);
+                    RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(255, 1, 206));
+
+                    // コンテンツデータの更新
+                    contentTarget.xpower = playerData.LeaguePower;
+                    contentTarget.xpowerSubtract = playerData.LeaguePowerDiff;
+                    contentNow.xpower = playerData.LeaguePowerDiff == 0 ? 0 : playerData.LeaguePower - playerData.LeaguePowerDiff;
+                    contentNow.xpowerSubtract = 0;
+                    break;
+                case RuleData.GameMode.Regular:
+                    PaintPointLabel.Visibility = Visibility.Visible;
+                    WeaponImage.Source = new BitmapImage(playerData.ImageUri);
+                    XPowerLabel.Content = playerData.WinMeter;
+                    XPowerLabel.Margin = new Thickness(150, 35, 0, 0);
+                    RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(59, 252, 3));
+                    break;
+                case RuleData.GameMode.Festival:
+                    break;
+            }
 
             // コンテンツデータの更新（targetに向かってnowからアニメーションが進行）
-            contentTarget.xpower = playerData.xPower[ruleIndex];
-            contentTarget.xpowerSubtract = playerData.xPowerDiff;
             contentTarget.killCount = playerData.KillCount;
             contentTarget.assistCount = playerData.AssistCount;
             contentTarget.deathCount = playerData.DeathCount;
@@ -84,9 +154,8 @@ namespace Splatoon2StreamingWidget
             contentTarget.deathCountN = playerData.DeathCountN;
             contentTarget.kdRateN = (float)playerData.KillCountN / (playerData.DeathCountN == 0 ? 1 : playerData.DeathCountN);
             contentTarget.wlRate = (int)Math.Round((float)playerData.WinCount / (playerData.WinCount + playerData.LoseCount == 0 ? 1 : playerData.WinCount + playerData.LoseCount) * 100);
+            contentTarget.paintPoint = playerData.PaintPoint;
 
-            contentNow.xpower = playerData.xPower[ruleIndex] - playerData.xPowerDiff;
-            contentNow.xpowerSubtract = 0;
             contentNow.killCount = playerData.KillCount - playerData.KillCountN;
             contentNow.assistCount = playerData.AssistCount - playerData.AssistCountN;
             contentNow.deathCount = playerData.DeathCount - playerData.DeathCountN;
@@ -96,21 +165,28 @@ namespace Splatoon2StreamingWidget
             contentNow.deathCountN = 0;
             contentNow.kdRateN = float.Parse(KDLabelN.Content.ToString(), CultureInfo.InvariantCulture);
             contentNow.wlRate = int.Parse(WLLabel.Content.ToString().TrimEnd('%'), CultureInfo.InvariantCulture);
+            contentNow.paintPoint = 0;
 
             animationTimes = 100;
             _animationDispatcherTimer.Start();
+            UpdateAnimation(null, null);
         }
 
-        public void UpdateRule(PlayerData playerData, int ruleIndex, string ruleName)
+        public void UpdateRule(PlayerData playerData, RuleData ruleData)
         {
-            UdemaeLabel.Content = playerData.udemae[ruleIndex][0];
-            RuleLabel.Content = ruleName;
-            if (playerData.udemae[ruleIndex] != "X")
-                XPowerLabel.Content = playerData.udemae[ruleIndex].Substring(1);
-            else
-                XPowerLabel.Content = playerData.udemae[ruleIndex] != "X" ? "" : playerData.xPower[ruleIndex] == 0 ? "Calculating" : $"{playerData.xPower[ruleIndex]:F1}";
+            UdemaeLabel.Content = playerData.Udemae[ruleData.RuleIndex][0];
+            RuleLabel.Content = ruleData.Name;
+            if (playerData.Udemae[ruleData.RuleIndex] != "X")
+                XPowerLabel.Content = playerData.Udemae[ruleData.RuleIndex].Substring(1);
+            else if (playerData.XPower[ruleData.RuleIndex] == 0)
+                XPowerLabel.Content = "Calculating";
+
+            XPowerLabel.Margin = new Thickness(90, 35, 0, 0);
+            XPowerSubtractLabel.Margin = new Thickness(370, 91, 0, 0);
+            RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(0xE2, 0x56, 0x2C));
 
             XPowerSubtractLabel.Content = "";
+            PaintPointLabel.Content = "";
             KALabelN.Content = "0(0)";
             DLabelN.Content = "0";
             KDLabelN.Content = "0.00";
@@ -122,7 +198,7 @@ namespace Splatoon2StreamingWidget
             if (contentTarget.xpower > 0)
             {
                 XPowerLabel.Content = $"{contentNow.xpower:F1}";
-                XPowerSubtractLabel.Content = contentNow.xpowerSubtract > 0 ? "+" + $"{contentNow.xpowerSubtract:F1}" : (contentNow.xpowerSubtract == 0 ? "" : $"{contentNow.xpowerSubtract:F1}");
+                XPowerSubtractLabel.Content = contentNow.xpowerSubtract > 0 ? "+" + $"{contentNow.xpowerSubtract:F1}" : contentNow.xpowerSubtract == 0 ? "" : $"{contentNow.xpowerSubtract:F1}";
             }
 
             KALabel.Content = (contentNow.killCount + contentNow.assistCount) + "(" + contentNow.assistCount + ")";
@@ -132,6 +208,7 @@ namespace Splatoon2StreamingWidget
             DLabelN.Content = contentNow.deathCountN;
             KDLabelN.Content = $"{contentNow.kdRateN:F2}";
             WLLabel.Content = contentNow.wlRate + "%";
+            PaintPointLabel.Content = contentNow.paintPoint + "p";
 
             // contentNowの更新
             contentNow.xpower += (contentTarget.xpower - contentNow.xpower) / animationTimes;
@@ -145,6 +222,7 @@ namespace Splatoon2StreamingWidget
             contentNow.deathCountN += (contentTarget.deathCountN - contentNow.deathCountN) / animationTimes;
             contentNow.kdRateN += (contentTarget.kdRateN - contentNow.kdRateN) / animationTimes;
             contentNow.wlRate += (contentTarget.wlRate - contentNow.wlRate) / animationTimes;
+            contentNow.paintPoint += (contentTarget.paintPoint - contentNow.paintPoint)/animationTimes;
 
             animationTimes--;
             if (animationTimes != 0) return;
@@ -164,6 +242,7 @@ namespace Splatoon2StreamingWidget
             DLabelN.Content = contentTarget.deathCountN;
             KDLabelN.Content = $"{contentTarget.kdRateN:F2}";
             WLLabel.Content = contentTarget.wlRate + "%";
+            PaintPointLabel.Content = contentTarget.paintPoint + "p";
         }
     }
 }

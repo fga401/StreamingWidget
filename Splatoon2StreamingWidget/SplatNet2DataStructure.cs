@@ -179,12 +179,21 @@ namespace Splatoon2StreamingWidget
             public class BattleResult
             {
                 public int battle_number;
-                public int my_team_count;
-                public int other_team_count;
                 public PlayerResult player_result;
-                public string x_power; // nullの可能性あり
+                public MyTeamResult my_team_result;
                 public GameMode game_mode;
                 public RuleName rule;
+
+                public float? win_meter; // turf
+                public float? x_power; // gachi
+                public float? max_league_point; // league
+                public float? league_point; // league
+                public float? estimate_gachi_power; // league
+
+                public int? my_team_count;
+                public int? other_team_count;
+                public float? my_team_percentage;
+                public float? other_team_percentage;
 
                 public class PlayerResult
                 {
@@ -197,18 +206,34 @@ namespace Splatoon2StreamingWidget
 
                     public class PlayerDetail
                     {
+                        public string principal_id;
                         public WeaponData weapon;
+                        public Udemae udemae;
 
                         public class WeaponData
                         {
                             public string name;
+                            public string image;
+                        }
+
+                        public class Udemae
+                        {
+                            public string name;
+                            public bool is_x;
+                            public string s_plus_number;
                         }
                     }
                 }
 
+                public class MyTeamResult
+                {
+                    public string name;
+                    public string key; // victory, defeat
+                }
+
                 public class GameMode
                 {
-                    public string key;
+                    public string key; // gachi, league_pair, league_team, private, regular
                     public string name;
                 }
 
@@ -217,6 +242,38 @@ namespace Splatoon2StreamingWidget
                     public string key;
                     public string name;
                 }
+            }
+        }
+
+        public class DetailResult
+        {
+            public List<MyTeamMembers> my_team_members;
+            public List<OtherTeamMembers> other_team_members;
+
+            public class MyTeamMembers
+            {
+                public int kill_count;
+                public int assist_count;
+                public int death_count;
+                public int special_count;
+                public int game_paint_point;
+                public Player player;
+            }
+
+            public class OtherTeamMembers
+            {
+                public int kill_count;
+                public int assist_count;
+                public int death_count;
+                public int special_count;
+                public int game_paint_point;
+                public Player player;
+            }
+
+            public class Player
+            {
+                public string nickname;
+                public string principal_id;
             }
         }
         #endregion

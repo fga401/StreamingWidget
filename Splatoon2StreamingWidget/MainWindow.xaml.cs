@@ -85,10 +85,10 @@ namespace Splatoon2StreamingWidget
             var ud = new UserData { user_name = _splatNet2.PlayerData.nickName, iksm_session = sessionID, principal_id = _splatNet2.PlayerData.principalID, session_token = sessionToken };
             DataManager.SaveConfig(ud);
 
-            var ruleNumber = await _splatNet2.GetSchedule();
+            var ruleNumber = await _splatNet2.GetGachiSchedule();
             if (_streamingWindow != null && !_streamingWindow.IsClosed) _streamingWindow.Close();
             _streamingWindow = new StreamingWindow();
-            _streamingWindow.UpdateWindow(_splatNet2.PlayerData, ruleNumber, _splatNet2.ruleNamesJP[ruleNumber]);
+            _streamingWindow.UpdateWindow(_splatNet2.PlayerData, _splatNet2.RuleData);
             _streamingWindow.Show();
             this.Closing += (sender, args) => _streamingWindow.Close();
 
@@ -133,8 +133,7 @@ namespace Splatoon2StreamingWidget
 
                 var lastBattleNumber = _splatNet2.lastBattleNumber;
                 await _splatNet2.UpdatePlayerData();
-                var ruleNumber = _splatNet2.lastBattleRule;
-                _streamingWindow.UpdateWindow(_splatNet2.PlayerData, ruleNumber, _splatNet2.ruleNamesJP[ruleNumber]);
+                _streamingWindow.UpdateWindow(_splatNet2.PlayerData, _splatNet2.RuleData);
 
                 // 新しいバトルが存在した場合
                 if (lastBattleNumber != _splatNet2.lastBattleNumber)
@@ -194,10 +193,10 @@ namespace Splatoon2StreamingWidget
                 IksmSessionTextBox.Text = authURL.url;
 
                 // iksm_sessionを入力するときは空白や改行などを除去
-                foreach (var cbi in _autoUpdatecomboBoxItems.Select(item => new ComboBoxItem { Content = item.Key }))
+                foreach (var cbi in _autoUpdatecomboBoxItems.Select(item => new ComboBoxItem {Content = item.Key}))
                     AutoUpdateTimeComboBox.Items.Add(cbi);
 
-                _autoUpdateTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 500) };
+                _autoUpdateTimer = new DispatcherTimer {Interval = new TimeSpan(0, 0, 0, 0, 500)};
                 _autoUpdateTimer.Tick += AutoUpdateTimerElapsed;
 
                 ChangeViewGrid(SessionGrid);
@@ -218,7 +217,8 @@ namespace Splatoon2StreamingWidget
                     return;
                 }
 
-                MessageBox.Show("ログインに失敗しました。\n初回起動時と同様、手動でログイン手順を踏んでください。", "ログインに失敗しました", MessageBoxButton.OK, MessageBoxImage.Hand);
+                MessageBox.Show("ログインに失敗しました。\n初回起動時と同様、手動でログイン手順を踏んでください。", "ログインに失敗しました", MessageBoxButton.OK,
+                    MessageBoxImage.Hand);
             }
             finally
             {
@@ -328,8 +328,8 @@ namespace Splatoon2StreamingWidget
         /// <param name="e"></param>
         private async void UpdateRuleMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var ruleNumber = await _splatNet2.GetSchedule();
-            _streamingWindow.UpdateRule(_splatNet2.PlayerData, ruleNumber, _splatNet2.ruleNamesJP[ruleNumber]);
+            var ruleNumber = await _splatNet2.GetGachiSchedule();
+            _streamingWindow.UpdateRule(_splatNet2.PlayerData,_splatNet2.RuleData);
         }
 
         private async void InitializeBattleRecordMenuItem_Click(object sender, RoutedEventArgs e)
@@ -341,11 +341,11 @@ namespace Splatoon2StreamingWidget
             isUpdating = true;
 
             await _splatNet2.TryInitializePlayerData();
-            var ruleNumber = await _splatNet2.GetSchedule();
-            _streamingWindow.UpdateWindow(_splatNet2.PlayerData, ruleNumber, _splatNet2.ruleNamesJP[ruleNumber]);
+            var ruleNumber = await _splatNet2.GetGachiSchedule();
+            _streamingWindow.UpdateWindow(_splatNet2.PlayerData, _splatNet2.RuleData);
 
             InformationViewTextBlock.Text = "初期化完了!";
-            if ((bool)AutoUpdateCheckBox.IsChecked)
+            if (AutoUpdateCheckBox.IsChecked != null && (bool)AutoUpdateCheckBox.IsChecked)
                 _autoUpdateTimer.Start();
 
             isUpdating = false;

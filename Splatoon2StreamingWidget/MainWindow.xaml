@@ -13,7 +13,6 @@
                 <MenuItem x:Name="InitializeBattleRecordMenuItem" Header="戦績初期化" Click="InitializeBattleRecordMenuItem_Click" />
                 <MenuItem x:Name="ChangeSessionMenuItem" Header="セッション変更" Click="ChangeSessionMenuItem_Click" />
                 <MenuItem x:Name="XpowerDecreaseMenuItem" Header="負けた場合のXPの表示" IsCheckable="True" Checked="XpowerDecreaseMenuItem_Checked"/>
-                <!-- <MenuItem x:Name="LeagueEstimateLPMenuItem" Header="リーグマッチ : 計測時に推定LPを表示する" IsCheckable="True" Checked="LeagueEstimateLPMenuItem_Checked" Unchecked="LeagueEstimateLPMenuItem_Unchecked"/> -->
             </MenuItem>
             <MenuItem Header="ヘルプ(_H)">
                 <MenuItem x:Name="VersionInformationMenuItem" Header="バージョン情報" Click="VersionInformationMenuItem_Click" />

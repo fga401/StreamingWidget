@@ -193,10 +193,10 @@ namespace Splatoon2StreamingWidget
                 IksmSessionTextBox.Text = authURL.url;
 
                 // iksm_sessionを入力するときは空白や改行などを除去
-                foreach (var cbi in _autoUpdatecomboBoxItems.Select(item => new ComboBoxItem { Content = item.Key }))
+                foreach (var cbi in _autoUpdatecomboBoxItems.Select(item => new ComboBoxItem {Content = item.Key}))
                     AutoUpdateTimeComboBox.Items.Add(cbi);
 
-                _autoUpdateTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 500) };
+                _autoUpdateTimer = new DispatcherTimer {Interval = new TimeSpan(0, 0, 0, 0, 500)};
                 _autoUpdateTimer.Tick += AutoUpdateTimerElapsed;
 
                 ChangeViewGrid(SessionGrid);
@@ -329,7 +329,7 @@ namespace Splatoon2StreamingWidget
         private async void UpdateRuleMenuItem_Click(object sender, RoutedEventArgs e)
         {
             var ruleNumber = await _splatNet2.GetGachiSchedule();
-            _streamingWindow.UpdateRule(_splatNet2.PlayerData, _splatNet2.RuleData);
+            _streamingWindow.UpdateRule(_splatNet2.PlayerData,_splatNet2.RuleData);
         }
 
         private async void InitializeBattleRecordMenuItem_Click(object sender, RoutedEventArgs e)
@@ -361,9 +361,6 @@ namespace Splatoon2StreamingWidget
             if (!canUpdate) MessageBox.Show("このバージョンは最新です。", "アップデート確認", MessageBoxButton.OK, MessageBoxImage.Asterisk);
             else await UpdateManager.ShowUpdateWindow();
         }
-
-        private void LeagueEstimateLPMenuItem_Checked(object sender, RoutedEventArgs e) => _splatNet2.WillDisplayEstimateLp = true;
-        private void LeagueEstimateLPMenuItem_Unchecked(object sender, RoutedEventArgs e) => _splatNet2.WillDisplayEstimateLp = false;
         #endregion
     }
 }

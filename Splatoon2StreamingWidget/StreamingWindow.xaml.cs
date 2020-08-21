@@ -75,6 +75,7 @@ namespace Splatoon2StreamingWidget
             PaintPointLabel.Content = "";
             WeaponImage.Source = null;
             MVPLabel.Visibility = Visibility.Hidden;
+            ContributionLabel.Visibility = Visibility.Hidden;
             PaintPointLabel.Visibility = Visibility.Hidden;
             contentTarget.xpower = 0; // アニメーションの処理をストップ
 
@@ -95,7 +96,7 @@ namespace Splatoon2StreamingWidget
                     // コンテンツデータの更新
                     contentTarget.xpower = playerData.XPower[ruleData.RuleIndex];
                     contentTarget.xpowerSubtract = playerData.XPowerDiff;
-                    contentNow.xpower = playerData.XPowerDiff== 0 ? 0 : playerData.XPower[ruleData.RuleIndex] - playerData.XPowerDiff; // 計測終了直後の場合と分ける
+                    contentNow.xpower = playerData.XPowerDiff == 0 ? 0 : playerData.XPower[ruleData.RuleIndex] - playerData.XPowerDiff; // 計測終了直後の場合と分ける
                     contentNow.xpowerSubtract = 0;
                     break;
                 case RuleData.GameMode.Private:
@@ -136,11 +137,39 @@ namespace Splatoon2StreamingWidget
                 case RuleData.GameMode.Regular:
                     PaintPointLabel.Visibility = Visibility.Visible;
                     WeaponImage.Source = new BitmapImage(playerData.ImageUri);
-                    XPowerLabel.Content = playerData.WinMeter;
+                    XPowerLabel.Content = $"{playerData.WinMeter:F1}";
                     XPowerLabel.Margin = new Thickness(150, 35, 0, 0);
                     RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(59, 252, 3));
                     break;
-                case RuleData.GameMode.Festival:
+                case RuleData.GameMode.FestivalSolo:
+                    if (playerData.FesPower == 0)
+                        XPowerLabel.Content = "Calculating";
+                    UpdateXPSubtractLabelColor(playerData.FesPowerDiff);
+                    XPowerLabel.Margin = new Thickness(40, 35, 0, 0);
+                    XPowerSubtractLabel.Margin = new Thickness(320, 91, 0, 0);
+                    RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(0xE2, 0x76, 0x4C));
+
+                    // コンテンツデータの更新
+                    contentTarget.xpower = playerData.FesPower;
+                    contentTarget.xpowerSubtract = playerData.FesPowerDiff;
+                    contentNow.xpower = playerData.FesPowerDiff == 0 ? 0 : playerData.FesPower - playerData.FesPowerDiff;
+                    contentNow.xpowerSubtract = 0;
+                    break;
+                case RuleData.GameMode.FestivalTeam:
+                    var cpt = playerData.ContributionPointTotal;
+                    if (cpt >= (long)Math.Pow(10, 10))
+                        XPowerLabel.Content = $"{cpt / Math.Pow(10, 9):F1}" + "B";
+                    else if (cpt >= (long)Math.Pow(10, 7))
+                        XPowerLabel.Content = $"{cpt / Math.Pow(10, 6):F1}" + "M";
+                    else if (cpt >= (long)Math.Pow(10, 4))
+                        XPowerLabel.Content = $"{cpt / Math.Pow(10, 3):F1}" + "K";
+                    else
+                        XPowerLabel.Content = cpt;
+
+                    XPowerLabel.Margin = new Thickness(35, 35, 0, 0);
+                    PaintPointLabel.Visibility = Visibility.Visible;
+                    ContributionLabel.Visibility = Visibility.Visible;
+                    RuleLabel.Foreground = new SolidColorBrush(Color.FromRgb(159, 252, 3));
                     break;
             }
 
@@ -222,7 +251,7 @@ namespace Splatoon2StreamingWidget
             contentNow.deathCountN += (contentTarget.deathCountN - contentNow.deathCountN) / animationTimes;
             contentNow.kdRateN += (contentTarget.kdRateN - contentNow.kdRateN) / animationTimes;
             contentNow.wlRate += (contentTarget.wlRate - contentNow.wlRate) / animationTimes;
-            contentNow.paintPoint += (contentTarget.paintPoint - contentNow.paintPoint)/animationTimes;
+            contentNow.paintPoint += (contentTarget.paintPoint - contentNow.paintPoint) / animationTimes;
 
             animationTimes--;
             if (animationTimes != 0) return;

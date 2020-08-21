@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 // 画像認識、アニメーション、時間で自動更新、xamlとずれている（上の部分の解像度？）、非同期、SplatNet2SessionToken組み込み, 計測中から終わったときにdiffが大変なことになりそう
 namespace Splatoon2StreamingWidget
@@ -31,6 +29,10 @@ namespace Splatoon2StreamingWidget
         public int DeathMVP = 0;
         public int KDMVP = 0;
         public int PointMVP = 0;
+        // fes
+        public float FesPower = 0;
+        public float FesPowerDiff = 0;
+        public long ContributionPointTotal = 0;
         // common
         public int KillCount = 0;
         public int AssistCount = 0;
@@ -70,7 +72,8 @@ namespace Splatoon2StreamingWidget
             League2,
             League4,
             Regular,
-            Festival
+            FestivalSolo,
+            FestivalTeam
         }
     }
 
@@ -85,6 +88,7 @@ namespace Splatoon2StreamingWidget
             {"turf_war",4}
         };
 
+        public bool WillDisplayEstimateLp { get; set; }
         public readonly string[] ruleNamesJP = new[] { "ガチエリア", "ガチヤグラ", "ガチホコバトル", "ガチアサリ", "ナワバリバトル" };
         public PlayerData PlayerData { get; private set; }
         public RuleData RuleData { get; private set; }
@@ -222,6 +226,7 @@ namespace Splatoon2StreamingWidget
             return GetRuleFromSchedule();
         }
 
+        // LPの処理について、機能をオンにするなら別のリグマが始まったときとの区別をつける必要がある
         public async Task UpdatePlayerData()
         {
             var res = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.Results>(ApiUriPrefix + "results", Cookie);
@@ -284,7 +289,10 @@ namespace Splatoon2StreamingWidget
                     // LPについての処理
                     case "league_pair":
                         PlayerData.LeaguePowerDiff = 0;
-                        var lp2 = item.league_point ?? 0;
+                        var lp2 = WillDisplayEstimateLp
+                            ? item.league_point ?? (item.my_estimate_league_point ?? 0)
+                            : (item.league_point ?? 0);
+                            
 
                         if (PlayerData.LeaguePower != 0)
                             PlayerData.LeaguePowerDiff = lp2 - PlayerData.LeaguePower;
@@ -298,7 +306,9 @@ namespace Splatoon2StreamingWidget
                     // LPについての処理
                     case "league_team":
                         PlayerData.LeaguePowerDiff = 0;
-                        var lp4 = item.league_point ?? 0;
+                        var lp4 = WillDisplayEstimateLp
+                            ? item.league_point ?? (item.my_estimate_league_point ?? 0)
+                            : (item.league_point ?? 0);
 
                         if (PlayerData.LeaguePower != 0)
                             PlayerData.LeaguePowerDiff = lp4 - PlayerData.LeaguePower;
@@ -337,10 +347,27 @@ namespace Splatoon2StreamingWidget
                         RuleData.Name = "ナワバリバトル";
                         break;
 
-                    // fes
-                    default:
-                        RuleData.Mode = RuleData.GameMode.Festival;
-                        RuleData.Name = "フェス";
+                    // フェス
+                    case "fes_solo":
+                        PlayerData.FesPowerDiff = 0;
+
+                        var fesPower = item.fes_power ?? 0;
+
+                        // 計測が終わった直後はDiffの表示は行わない
+                        if (PlayerData.FesPower != 0)
+                            PlayerData.FesPowerDiff = fesPower - PlayerData.FesPower;
+
+                        PlayerData.FesPower = fesPower;
+
+                        RuleData.Mode = RuleData.GameMode.FestivalSolo;
+                        RuleData.Name = "フェス(チャレンジ)";
+                        break;
+
+                    case "fes_team":
+                        PlayerData.ContributionPointTotal = item.contribution_point_total ?? 0;
+
+                        RuleData.Mode = RuleData.GameMode.FestivalTeam;
+                        RuleData.Name = "フェス(レギュラー)";
                         break;
                 }
             }

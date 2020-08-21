@@ -188,7 +188,12 @@ namespace Splatoon2StreamingWidget
                 public float? x_power; // gachi
                 public float? max_league_point; // league
                 public float? league_point; // league
-                public float? estimate_gachi_power; // league
+                public float? my_estimate_league_point; // league
+                public float? fes_power; // fes
+                public int? contribution_point; // fes
+                public long? contribution_point_total; // fes
+                public float? estimate_gachi_power; // ?
+                
 
                 public int? my_team_count;
                 public int? other_team_count;

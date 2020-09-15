@@ -15,14 +15,7 @@ Splatoon2のStreamingWidget
 [ダウンロードリンク](https://github.com/boomxch/StreamingWidget/raw/master/Splatoon2StreamingWidget.exe)
 
 ## 更新情報
-- フェス(チャレンジ)への対応
-- フェス(レギュラー)への対応
-- レギュラーマッチへの対応
-- リーグマッチへの対応
-- プライベートマッチへの暫定対応
-- ウデマエが変化したときに変わらない問題を修正
-- 各項目の配置を変更
-- XP、LPの変化値の色合いを変更
+- APIの変更に対応しました
 
 ## 使い方
 

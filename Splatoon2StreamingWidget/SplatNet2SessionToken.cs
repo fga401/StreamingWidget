@@ -198,7 +198,7 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Host", "");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
-            request.Headers.Add("X-ProductVersion", "1.8.0");
+            request.Headers.Add("X-ProductVersion", "1.9.0");
             request.Headers.Add("Authorization", "Bearer");
             request.Headers.Add("X-Platform", "Android");
 
@@ -258,7 +258,7 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Host", "");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
-            request.Headers.Add("X-ProductVersion", "1.8.0");
+            request.Headers.Add("X-ProductVersion", "1.9.0");
             request.Headers.Add("Authorization", "Bearer " + idToken);
             request.Headers.Add("X-Platform", "Android");
 

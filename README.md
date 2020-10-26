@@ -1,5 +1,6 @@
 # StreamingWidget
 Splatoon2のStreamingWidget
+![sample](https://user-images.githubusercontent.com/6965987/97128982-1aa25b80-1781-11eb-91da-8d4135c96968.png)
 
 ## 注意事項
 - Windows用

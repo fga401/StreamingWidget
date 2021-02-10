@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -45,8 +46,6 @@ namespace Splatoon2StreamingWidget
             var body = new Dictionary<string, string>
             {
                 {"state", authState},
-                {"redirect_uri", HttpUtility.UrlEncode("")},
-                {"client_id", ""},
                 {"scope", "openid user user.birthday user.mii user.screenName"},
                 {"response_type", "session_token_code"},
                 {"session_token_code_challenge", authCodeChallenge},
@@ -64,19 +63,15 @@ namespace Splatoon2StreamingWidget
         public static async Task<string> GetSessionToken(string sessionTokenCode, string authCodeVerifier)
         {
             const string url = "";
-
             using var request = new HttpRequestMessage(HttpMethod.Post, url);
 
-            request.Headers.Add("User-Agent", "");
             request.Headers.Add("Accept-Language", "en-US");
             request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Host", "");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
 
             var body = new Dictionary<string, string>
             {
-                {"client_id", ""},
                 {"session_token_code", sessionTokenCode},
                 {"session_token_code_verifier", authCodeVerifier}
             };
@@ -87,7 +82,7 @@ namespace Splatoon2StreamingWidget
 
             try
             {
-                var res = await HttpManager.GetDecompressedDeserializedJsonAsync<SplatNet2DataStructure.SessionToken>(request);
+                var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.SessionToken>(request);
                 return res.session_token;
             }
             catch (HttpRequestException)
@@ -116,16 +111,13 @@ namespace Splatoon2StreamingWidget
 
             var request = new HttpRequestMessage(HttpMethod.Post, url);
 
-            request.Headers.Add("User-Agent", "");
             request.Headers.Add("Accept-Language", "ja-JP");
             request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Host", "");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
 
             var body = new Dictionary<string, string>
             {
-                {"client_id", ""},
                 {"session_token", sessionToken},
                 {"grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer-session-token"}
             };
@@ -137,7 +129,7 @@ namespace Splatoon2StreamingWidget
             string accessToken;
             try
             {
-                var res = await HttpManager.GetDecompressedDeserializedJsonAsync<SplatNet2DataStructure.AccessToken>(request);
+                var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.AccessToken>(request);
                 accessToken = res.access_token;
             }
             catch (HttpRequestException)
@@ -159,18 +151,16 @@ namespace Splatoon2StreamingWidget
             const string url2 = "";
             request = new HttpRequestMessage(HttpMethod.Get, url2);
 
-            request.Headers.Add("User-Agent", "");
             request.Headers.Add("Accept-Language", "ja-JP");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Authorization", "Bearer " + accessToken);
-            request.Headers.Add("Host", "");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
 
             SplatNet2DataStructure.UserInfo userInfo;
             try
             {
-                userInfo = await HttpManager.GetDecompressedDeserializedJsonAsync<SplatNet2DataStructure.UserInfo>(request);
+                userInfo = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.UserInfo>(request);
             }
             catch (HttpRequestException)
             {
@@ -192,10 +182,8 @@ namespace Splatoon2StreamingWidget
 
             request = new HttpRequestMessage(HttpMethod.Post, url3);
 
-            request.Headers.Add("User-Agent", "");
             request.Headers.Add("Accept-Language", "ja-JP");
             request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Host", "");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
             request.Headers.Add("X-ProductVersion", "1.10.0");
@@ -228,7 +216,7 @@ namespace Splatoon2StreamingWidget
             string idToken;
             try
             {
-                var res = await HttpManager.GetDecompressedDeserializedJsonAsync<SplatNet2DataStructure.SplatoonToken>(request);
+                var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.SplatoonToken>(request);
                 idToken = res.result.webApiServerCredential.accessToken;
             }
             catch (HttpRequestException)
@@ -253,9 +241,7 @@ namespace Splatoon2StreamingWidget
 
             request = new HttpRequestMessage(HttpMethod.Post, url4);
 
-            request.Headers.Add("User-Agent", "");
             request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Host", "");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
             request.Headers.Add("X-ProductVersion", "1.10.0");
@@ -268,7 +254,6 @@ namespace Splatoon2StreamingWidget
                     "parameter",
                     new Dictionary<string, string>
                     {
-                        { "id","5741031244955648"},
                         {"f", flapgApp.f},
                         {"registrationToken", flapgApp.p1},
                         {"timestamp", flapgApp.p2},
@@ -284,7 +269,7 @@ namespace Splatoon2StreamingWidget
             string splatoonAccessToken;
             try
             {
-                var res = await HttpManager.GetDecompressedDeserializedJsonAsync<SplatNet2DataStructure.WebServiceToken>(request);
+                var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.WebServiceToken>(request);
                 splatoonAccessToken = res.result.accessToken;
             }
             catch (HttpRequestException)
@@ -307,7 +292,6 @@ namespace Splatoon2StreamingWidget
 
             request = new HttpRequestMessage(HttpMethod.Get, url5);
 
-            request.Headers.Add("Host", "");
             request.Headers.Add("X-IsAppAnalyticsOptedIn", "false");
             request.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
             request.Headers.Add("Accept-Encoding", "gzip,deflate");
@@ -316,8 +300,7 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("X-IsAnalyticsOptedIn", "false");
             request.Headers.Add("Connection", "keep-alive");
             request.Headers.Add("DNT", "0");
-            request.Headers.Add("User-Agent", "");
-            request.Headers.Add("X-Requested-With", "");
+            request.Headers.Add("User-Agent", "Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36");
 
             try
             {
@@ -356,7 +339,7 @@ namespace Splatoon2StreamingWidget
 
             try
             {
-                var res = await HttpManager.GetDeserializedJsonAsync<SplatNet2DataStructure.FlapgResult>(request);
+                var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.FlapgResult>(request);
                 return res.result;
             }
             catch (HttpRequestException)
@@ -384,7 +367,7 @@ namespace Splatoon2StreamingWidget
 
             try
             {
-                var res = await HttpManager.GetDeserializedJsonAsync<SplatNet2DataStructure.S2SResult>(request);
+                var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.S2SResult>(request);
                 return res.hash;
             }
             catch (HttpRequestException)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +11,8 @@ namespace Splatoon2StreamingWidget
 
         public static async Task WriteLogAsync(string text)
         {
+            if (!Directory.Exists("data"))
+                Directory.CreateDirectory("data");
             if (!File.Exists(Path)) File.Create(Path);
 
             text = "[" + DateTime.Now + "] " + text + "\n";

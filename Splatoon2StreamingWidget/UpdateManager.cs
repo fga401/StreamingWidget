@@ -9,7 +9,7 @@ namespace Splatoon2StreamingWidget
 {
     public static class UpdateManager
     {
-        public const string VersionNumber = "1.2.3";
+        public const string VersionNumber = "1.2.4";
         private static string newVersionNumber = "";
         private static UpdateWindow _updateWindow;
 

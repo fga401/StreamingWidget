@@ -28,6 +28,31 @@ namespace Splatoon2StreamingWidget
             return JsonConvert.DeserializeObject<TJson>(response);
         }
 
+        // gzipで圧縮されているかを判定しながらデータ形式に落とし込む
+        public static async Task<TJson> GetAutoDeserializedJsonAsync<TJson>(HttpRequestMessage request)
+        {
+            var response = await Client.SendAsync(request);
+            string json;
+            if (response.Content.Headers.ContentEncoding.FirstOrDefault() == "gzip")
+            {
+                response.EnsureSuccessStatusCode();
+                var inStream = await response.Content.ReadAsStreamAsync();
+                var decompStream = new GZipStream(inStream, CompressionMode.Decompress);
+                await using (inStream)
+                await using (decompStream)
+                {
+                    using var reader = new StreamReader(decompStream, Encoding.UTF8, true) as TextReader;
+                    json = await reader.ReadToEndAsync();
+                }
+            }
+            else
+            {
+                json = await response.Content.ReadAsStringAsync();
+            }
+
+            return JsonConvert.DeserializeObject<TJson>(json);
+        }
+
         public static async Task<TJson> GetDeserializedJsonAsync<TJson>(HttpRequestMessage request)
         {
             var response = await Client.SendAsync(request);

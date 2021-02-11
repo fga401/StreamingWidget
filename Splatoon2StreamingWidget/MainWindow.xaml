@@ -14,6 +14,8 @@
                 <MenuItem x:Name="ChangeSessionMenuItem" Header="セッション変更" Click="ChangeSessionMenuItem_Click" />
                 <MenuItem x:Name="XpowerDecreaseMenuItem" Header="負けた場合のXPの表示" IsCheckable="True" Checked="XpowerDecreaseMenuItem_Checked"/>
                 <!-- <MenuItem x:Name="LeagueEstimateLPMenuItem" Header="リーグマッチ : 計測時に推定LPを表示する" IsCheckable="True" Checked="LeagueEstimateLPMenuItem_Checked" Unchecked="LeagueEstimateLPMenuItem_Unchecked"/> -->
+                <MenuItem x:Name="MatchAnalyzeMenuItem" Header="対戦分析ツールを使う" Click="MatchAnalyzeMenuItem_Click"/>
+                <MenuItem x:Name="MatchRecordMenuItem" Header="対戦記録ツールを使う" Click="MatchRecordMenuItem_Click"/>
             </MenuItem>
             <MenuItem Header="ヘルプ(_H)">
                 <MenuItem x:Name="VersionInformationMenuItem" Header="バージョン情報" Click="VersionInformationMenuItem_Click" />

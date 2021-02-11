@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -360,6 +361,30 @@ namespace Splatoon2StreamingWidget
             var canUpdate = await UpdateManager.CheckUpdate();
             if (!canUpdate) MessageBox.Show("このバージョンは最新です。", "アップデート確認", MessageBoxButton.OK, MessageBoxImage.Asterisk);
             else await UpdateManager.ShowUpdateWindow();
+        }
+
+        private void MatchAnalyzeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var ud = DataManager.LoadConfig();
+            var url = "https://splatool.net/analytics/?iksm=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(ud.iksm_session));
+            var ps = new ProcessStartInfo(url)
+            {
+                UseShellExecute = true,
+                Verb = "open"
+            };
+            Process.Start(ps);
+        }
+
+        private void MatchRecordMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var ud = DataManager.LoadConfig();
+            var url = "https://splatool.net/records/?iksm=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(ud.iksm_session));
+            var ps = new ProcessStartInfo(url)
+            {
+                UseShellExecute = true,
+                Verb = "open"
+            };
+            Process.Start(ps);
         }
 
         private void LeagueEstimateLPMenuItem_Checked(object sender, RoutedEventArgs e) => _splatNet2.WillDisplayEstimateLp = true;

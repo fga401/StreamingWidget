@@ -366,7 +366,7 @@ namespace Splatoon2StreamingWidget
         private void MatchAnalyzeMenuItem_Click(object sender, RoutedEventArgs e)
         {
             var ud = DataManager.LoadConfig();
-            var url = "https://splatool.net/analytics/?iksm=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(ud.iksm_session));
+            var url = "https://splatool.net/analytics/?iksm=" + Convert.ToBase64String(Encoding.UTF8.GetBytes(ud.iksm_session)) + "#iklink";
             var ps = new ProcessStartInfo(url)
             {
                 UseShellExecute = true,

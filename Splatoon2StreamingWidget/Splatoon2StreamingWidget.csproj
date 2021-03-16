@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <Win32Resource />
-    <Version>1.2.4</Version>
+    <Version>1.2.7</Version>
     <Authors>sisno_boomx</Authors>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>

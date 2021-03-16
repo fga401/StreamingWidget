@@ -19,7 +19,7 @@ Splatoon2のStreamingWidget
 [ダウンロードリンク](https://1drv.ms/u/s!Am_cMZT26Ppfgax4zbCiV47P_tWJvA) (100MB↑なのでone driveへのリンクです)
 
 ## 更新情報
-- API更新への対応
+- エラーを含む通信の削減
 
 ## 使い方
 

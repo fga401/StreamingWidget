@@ -76,6 +76,12 @@ namespace Splatoon2StreamingWidget
                 {"session_token_code_verifier", authCodeVerifier}
             };
 
+            if (IsBodyEmpty(body))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return "";
+            }
+
             var json = JsonConvert.SerializeObject(body);
 
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -122,6 +128,12 @@ namespace Splatoon2StreamingWidget
                 {"grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer-session-token"}
             };
 
+            if (IsBodyEmpty(body))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return "";
+            }
+
             var json = JsonConvert.SerializeObject(body);
 
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -156,6 +168,12 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Authorization", "Bearer " + accessToken);
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
+
+            if (IsBodyEmpty(accessToken))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return "";
+            }
 
             SplatNet2DataStructure.UserInfo userInfo;
             try
@@ -208,6 +226,12 @@ namespace Splatoon2StreamingWidget
                 },
             };
 
+            if (IsBodyEmpty(body3))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return "";
+            }
+
             var json3 = JsonConvert.SerializeObject(body3);
 
             request.Content = new StringContent(json3, Encoding.UTF8, "application/json");
@@ -246,6 +270,12 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Authorization", "Bearer " + idToken);
             request.Headers.Add("X-Platform", "Android");
 
+            if (IsBodyEmpty(idToken))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return "";
+            }
+
             var body4 = new Dictionary<string, Dictionary<string, string>>
             {
                 {
@@ -259,6 +289,12 @@ namespace Splatoon2StreamingWidget
                     }
                 },
             };
+
+            if (IsBodyEmpty(body4))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return "";
+            }
 
             var json4 = JsonConvert.SerializeObject(body4);
 
@@ -299,6 +335,12 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Connection", "keep-alive");
             request.Headers.Add("DNT", "0");
 
+            if (IsBodyEmpty(splatoonAccessToken))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return "";
+            }
+
             try
             {
                 var cookies = await HttpManager.GetCookieContainer(request);
@@ -334,6 +376,12 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("x-ver", "3");
             request.Headers.Add("x-iid", type);
 
+            if (IsBodyEmpty(idToken, guid, type))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return new SplatNet2DataStructure.FlapgResult.FlapgInnerResult();
+            }
+
             try
             {
                 var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.FlapgResult>(request);
@@ -360,6 +408,12 @@ namespace Splatoon2StreamingWidget
                 {"timestamp", timeStamp.ToString()}
             };
 
+            if (IsBodyEmpty(body))
+            {
+                await LogManager.WriteLogAsync("Body is null");
+                return "";
+            }
+
             request.Content = new StringContent(await new FormUrlEncodedContent(body).ReadAsStringAsync(), Encoding.UTF8, "application/x-www-form-urlencoded");
 
             try
@@ -372,6 +426,21 @@ namespace Splatoon2StreamingWidget
                 await LogManager.WriteLogAsync("Failed to get \"hash\"");
                 return "";
             }
+        }
+
+        private static bool IsBodyEmpty(Dictionary<string, string> dic)
+        {
+            return dic.Any(data => string.IsNullOrEmpty(data.Value));
+        }
+
+        private static bool IsBodyEmpty(Dictionary<string, Dictionary<string, string>> dic)
+        {
+            return dic.Any(data => Enumerable.Any<KeyValuePair<string, string>>(data.Value, data2 => string.IsNullOrEmpty(data2.Value)));
+        }
+
+        private static bool IsBodyEmpty(params string[] val)
+        {
+            return val.Any(data => string.IsNullOrEmpty(data));
         }
     }
 }

@@ -1,5 +1,5 @@
 # StreamingWidget
-ENG ver [README_Eng](https://github.com/boomxch/StreamingWidget/raw/master/README_Eng.md)  
+ENG ver [README_Eng](https://github.com/boomxch/StreamingWidget/blob/master/README_Eng.md)  
   
 Splatoon2の配信者用情報表示ツールです  
 ナワバリ、ガチマッチ、リーグマッチ、プライベートマッチのパワーや勝率、K/D、塗りポイントなどの情報を表示します

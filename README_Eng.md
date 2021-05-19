@@ -21,7 +21,7 @@ Note that you will need to install x86 ver since my application was created for 
 [Download Link](https://1drv.ms/u/s!Am_cMZT26Ppfgax4zbCiV47P_tWJvA) (This is a link to One Drive because it is over 100MB)
 
 ## Update Infomation
-- Reduction of data transmission containing errors
+- Support for API changes
 
 ## Usage
 

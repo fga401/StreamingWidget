@@ -7,13 +7,13 @@ Splatoon2の配信者用情報表示ツールです
 
 ## 注意事項
 - Windows用
-- `.NET Core 3.1 Runtime`のインストールが必須
+- `.NET 5.0 Runtime`のインストールが必須
 
 ## アプリの起動に必要なランタイム
 当アプリケーションは以前まで自己完結型アプリケーション(約160MB)でしたが、アップデート機能の追加に伴い、フレームワーク依存型アプリケーション(約8MB)に変更しました。  
-この影響で、アプリケーションの起動には`.NET Core 3.1 Runtime`のインストールが必須となっています。  
-下記ダウンロードリンクにアクセスして"Windows"タブ（デフォルト選択）から"Download x86"(自分のアプリケーションが32bit用に作成してあるため、x86でないと動きません)を選びインストールを行ってください。  
-[ダウンロードリンク](https://dotnet.microsoft.com/download/dotnet-core/current/runtime)
+この影響で、アプリケーションの起動には`.NET 5.0 Runtime`のインストールが必須となっています。  
+下記ダウンロードリンクにアクセスして"Windows"タブ（デフォルト選択）から"Run desktop apps"の"Download x86"(自分のアプリケーションが32bit用に作成してあるため、x86でないと動きません)を選びインストールを行ってください。  
+[ダウンロードリンク](https://dotnet.microsoft.com/download/dotnet/current/runtime)
 
 ## アプリケーションファイルダウンロードリンク
 [ダウンロードリンク](https://github.com/boomxch/StreamingWidget/raw/master/Splatoon2StreamingWidget.exe)
@@ -22,7 +22,7 @@ Splatoon2の配信者用情報表示ツールです
 [ダウンロードリンク](https://1drv.ms/u/s!Am_cMZT26Ppfgctv_ckv94_Ts9heeA) (100MB↑なのでone driveへのリンクです)
 
 ## 更新情報
-- API変更への対応
+- `.NET 5.0`に移行
 
 ## 使い方
 

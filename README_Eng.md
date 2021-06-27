@@ -5,14 +5,14 @@ Displays information such as power, win percentage, K/D, paint points, etc. for 
 
 ## Notification
 - For Windows
-- It requires a install of `.NET Core 3.1 Runtime`
+- It requires a install of `.NET 5.0 Runtime`
 
 ## About the runtime required to launch the app
 This application used to be a self-contained application (about 160MB), but with the addition of the update feature, it has been changed to a framework-dependent application (about 8MB).    
-Due to this effect, the installation of `.NET Core 3.1 Runtime` is required to launch the application.  
-Go to the download link below and select `Donwload x86` from tab `Windows` (default selection) to install.  
+Due to this effect, the installation of `.NET 5.0 Runtime` is required to launch the application.  
+Go to the download link below and select `Donwload x86` in `Run desktop apps` from tab `Windows` (default selection) to install.  
 Note that you will need to install x86 ver since my application was created for 32bit.  
-[Download Link](https://dotnet.microsoft.com/download/dotnet-core/current/runtime)
+[Download Link](https://dotnet.microsoft.com/download/dotnet/current/runtime)
 
 ## Application file download link
 [Download Link](https://github.com/boomxch/StreamingWidget/raw/master/Splatoon2StreamingWidget.exe)
@@ -21,7 +21,7 @@ Note that you will need to install x86 ver since my application was created for 
 [Download Link](https://1drv.ms/u/s!Am_cMZT26Ppfgctv_ckv94_Ts9heeA) (This is a link to One Drive because it is over 100MB)
 
 ## Update Infomation
-- Support for API changes
+- Changed to `.NET 5.0`
 
 ## Usage
 

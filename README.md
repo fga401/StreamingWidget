@@ -19,7 +19,7 @@ Splatoon2の配信者用情報表示ツールです
 [ダウンロードリンク](https://github.com/boomxch/StreamingWidget/raw/master/Splatoon2StreamingWidget.exe)
 
 ### もし起動が上手くいかない方はこちらの64bit版(自己完結型アプリケーション)もお試しください
-[ダウンロードリンク](https://1drv.ms/u/s!Am_cMZT26Ppfgax4zbCiV47P_tWJvA) (100MB↑なのでone driveへのリンクです)
+[ダウンロードリンク](https://1drv.ms/u/s!Am_cMZT26Ppfgctv_ckv94_Ts9heeA) (100MB↑なのでone driveへのリンクです)
 
 ## 更新情報
 - API変更への対応

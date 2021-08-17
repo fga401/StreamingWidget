@@ -22,7 +22,7 @@ Splatoon2の配信者用情報表示ツールです
 [ダウンロードリンク](https://1drv.ms/u/s!Am_cMZT26Ppfgctv_ckv94_Ts9heeA) (100MB↑なのでone driveへのリンクです)
 
 ## 更新情報
-- `.NET 5.0`に移行
+- APIの変更に対応
 
 ## 使い方
 

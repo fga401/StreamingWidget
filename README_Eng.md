@@ -18,7 +18,7 @@ Note that you will need to install x86 ver since my application was created for 
 [Download Link](https://github.com/boomxch/StreamingWidget/raw/master/Splatoon2StreamingWidget.exe)
 
 ### If you have trouble starting the application, please try this 64bit version (self-contained application)
-[Download Link](https://1drv.ms/u/s!Am_cMZT26Ppfgctv_ckv94_Ts9heeA) (This is a link to One Drive because it is over 100MB)
+[Download Link](https://1drv.ms/u/s!Am_cMZT26PpfhNUj5nX0jMnwYmvZfA?e=8wy7ab) (This is a link to One Drive because it is over 100MB)
 
 ## Update Infomation
 - Support for API changes

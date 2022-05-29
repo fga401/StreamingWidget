@@ -8,7 +8,7 @@
         Title="StreamingWindow" Height="210" Width="800" Foreground="{x:Null}" Background="{x:Null}" ResizeMode="NoResize">
     <Grid>
         <Rectangle  Fill="#3A3A3A" Stroke="#FF000000" RadiusX="15" RadiusY="15"/>
-        <Label x:Name="UdemaeLabel" Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="150" Margin="15,20,0,0" FontWeight="Normal" FontStyle="Normal" RenderTransformOrigin="0.5,0.5">
+        <Label x:Name="UdemaeLabel" Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="65" Margin="19,71,0,0" FontWeight="Normal" FontStyle="Normal" RenderTransformOrigin="0.5,0.5">
             <Label.Background>
                 <ImageBrush/>
             </Label.Background>
@@ -25,87 +25,87 @@
             </Label.Effect>
         </Label>
         <Image x:Name="WeaponImage" Width="120" Height="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="13,50,0,0" />
-        <Label x:Name="MVPLabel" Content="K/D MVP" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="100" Margin="10,60,0,0">
+        <Label x:Name="MVPLabel" Content="K/D MVP" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="20" Margin="707,88,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="ContributionLabel" Content="Contribution Point" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="30" Margin="20,35,0,0">
+        <Label x:Name="ContributionLabel" Content="Contribution Point" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="20" Margin="459,88,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="XPowerLabel" Content="2000.0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="130" Margin="90,35,0,0">
+        <Label x:Name="XPowerLabel" Content="2000.0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="65" Margin="64,71,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="XPowerSubtractLabel" Content="-10.0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="Red" FontFamily="./Resources/#Splatfont 2" FontSize="65" Margin="370,91,0,0">
+        <Label x:Name="XPowerSubtractLabel" Content="-10.0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="Red" FontFamily="./Resources/#Splatfont 2" FontSize="65" Margin="284,73,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="PaintPointLabel" Content="1500p" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="80" Margin="0,80,290,0">
+        <Label x:Name="PaintPointLabel" Content="1500p" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#Splatfont 2" FontSize="20" Margin="0,88,117,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="RuleLabel" Content="ガチエリア" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#E2562C" FontFamily="./Resources/#イカモドキ" FontSize="35" Margin="10,-5,0,0">
+        <Label x:Name="RuleLabel" Content="ガチエリア" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#E2562C" FontFamily="./Resources/#イカモドキ" FontSize="25" Margin="23,14,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="1" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label Content="k/d" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,13,260,0">
+        <Label Content="k/d" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,5,253,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label Content="k" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,13,421,0">
+        <Label Content="k" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,5,416,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label Content="d" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,13,352,0">
+        <Label Content="d" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,5,357,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="KALabel" Content="200(100)" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="35" Margin="0,5,436,0">
+        <Label x:Name="KALabel" Content="10(5)" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,5,429,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="DLabel" Content="100" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="35" Margin="0,5,366,0">
+        <Label x:Name="DLabel" Content="20" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,5,373,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="KDLabel" Content="1.23" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="35" Margin="0,5,292,0">
+        <Label x:Name="KDLabel" Content="1.23" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,5,298,0" RenderTransformOrigin="0.392,0.71">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label Content="Win" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#FF4786" FontFamily="./Resources/#SplatFont 2" FontSize="35" Margin="555,5,0,0">
+        <Label Content="Win" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#FF4786" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="555,5,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="WLabel" Content="100" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#FF4786" FontFamily="./Resources/#SplatFont 2" FontSize="35" Margin="595,5,0,0">
+        <Label x:Name="WLabel" Content="100" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#FF4786" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="595,5,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label Content="Lose" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#48FF73" FontFamily="./Resources/#SplatFont 2" FontSize="35" Margin="645,5,0,0">
+        <Label Content="Lose" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#48FF73" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="645,5,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="LLabel" Content="100" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#48FF73" FontFamily="./Resources/#SplatFont 2" FontSize="35" Margin="695,5,0,0">
+        <Label x:Name="LLabel" Content="100" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{x:Null}" Foreground="#48FF73" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="695,5,0,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="WLLabel" Content="50%" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="35" Margin="0,5,5,0">
+        <Label x:Name="WLLabel" Content="50%" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="#9A9A9A" FontFamily="./Resources/#SplatFont 2" FontSize="25" Margin="0,5,5,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
@@ -115,27 +115,27 @@
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label Content="k" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="30" Margin="0,120,173,0">
+        <Label Content="k" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="30" Margin="0,120,179,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label Content="d" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="30" Margin="0,120,115,0">
+        <Label Content="d" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="30" Margin="0,120,120,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="KALabelN" Content="20(10)" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="50" Margin="0,103,188,0">
+        <Label x:Name="KALabelN" Content="20(10)" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="30" Margin="0,120,196,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="DLabelN" Content="10" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="50" Margin="0,103,130,0">
+        <Label x:Name="DLabelN" Content="10" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="30" Margin="0,120,137,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>
         </Label>
-        <Label x:Name="KDLabelN" Content="1.23" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="50" Margin="0,103,43,0">
+        <Label x:Name="KDLabelN" Content="1.23" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontFamily="./Resources/#SplatFont 2" FontSize="30" Margin="0,120,56,0">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="4" Direction="330" Color="Black" Opacity="0.5" BlurRadius="4"/>
             </Label.Effect>

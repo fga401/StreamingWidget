@@ -16,7 +16,9 @@ namespace Splatoon2StreamingWidget
     static class HttpManager
     {
         private static readonly CookieContainer CookieContainer = new CookieContainer();
-        private static readonly HttpClientHandler Handler = new HttpClientHandler { CookieContainer = CookieContainer };
+        // private static readonly WebProxy Proxy = WebProxy.GetDefaultProxy();
+        // private static readonly HttpClientHandler Handler = new HttpClientHandler { CookieContainer = CookieContainer, Proxy = Proxy };
+        private static readonly HttpClientHandler Handler = new HttpClientHandler { CookieContainer = CookieContainer};
         private static readonly HttpClient Client = new HttpClient(Handler);
 
         public static async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request) => await Client.SendAsync(request);
@@ -94,7 +96,7 @@ namespace Splatoon2StreamingWidget
 
         public static async Task<TJson> GetDeserializedJsonAsyncWithCookieContainer<TJson>(string uri, Cookie cookie)
         {
-            Handler.CookieContainer.Add(new Uri(""), cookie);
+            Handler.CookieContainer.Add(new Uri("https://app.splatoon2.nintendo.net/"), cookie);
             var json = await Client.GetStringAsync(uri);
 
             return JsonConvert.DeserializeObject<TJson>(json);

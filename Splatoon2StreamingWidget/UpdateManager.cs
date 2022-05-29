@@ -19,6 +19,7 @@ namespace Splatoon2StreamingWidget
         /// <returns>アップデートがある場合、Trueを返す</returns>
         public static async Task<bool> CheckUpdate()
         {
+            return false; // disable update
             const string url = "https://raw.githubusercontent.com/boomxch/StreamingWidget/master/version";
             var versionJson = await HttpManager.GetDeserializedJsonAsync<SplatNet2DataStructure.VersionData>(url);
             newVersionNumber = versionJson.version;

@@ -96,7 +96,7 @@ namespace Splatoon2StreamingWidget
         private List<SplatNet2DataStructure.Schedules.GachiSchedule> schedules = new List<SplatNet2DataStructure.Schedules.GachiSchedule>();
         private readonly string iksmSession;
         private readonly Cookie Cookie;
-        private const string ApiUriPrefix = "";
+        private const string ApiUriPrefix = "https://app.splatoon2.nintendo.net/api/";
         private const decimal SplatNet2Time2020 = 1577836800;
         private readonly DateTime DateTime2020 = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 

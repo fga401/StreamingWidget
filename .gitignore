@@ -1,0 +1,13 @@
+.vs
+
+!Splatoon2StreamingWidget/bin/
+Splatoon2StreamingWidget/bin/*
+!Splatoon2StreamingWidget/bin/Release/
+Splatoon2StreamingWidget/bin/Release/*
+!Splatoon2StreamingWidget/bin/Release/netcoreapp3.1/
+Splatoon2StreamingWidget/bin/Release/netcoreapp3.1/*
+#!Splatoon2StreamingWidget/bin/Release/netcoreapp3.1/publish
+
+Splatoon2StreamingWidget/obj/
+
+Backup/

@@ -19,6 +19,7 @@ namespace Splatoon2StreamingWidget
     public static class SplatNet2SessionToken
     {
         private static long GetUnixTime() => (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+        private const string appVersion = "2.1.1";
 
         /// <summary>
         /// Generate login URL
@@ -41,10 +42,12 @@ namespace Splatoon2StreamingWidget
             var authCodeChallenge = authCvHash.TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
 
-            var url = "";
+            var url = "https://accounts.nintendo.com/connect/1.0.0/authorize?";
 
             var body = new Dictionary<string, string>
             {
+                {"redirect_uri", "npf71b963c1b7b6d119://auth"},
+                {"client_id", "71b963c1b7b6d119"},
                 {"state", authState},
                 {"scope", "openid user user.birthday user.mii user.screenName"},
                 {"response_type", "session_token_code"},
@@ -62,16 +65,19 @@ namespace Splatoon2StreamingWidget
         /// <returns>session_token</returns>
         public static async Task<string> GetSessionToken(string sessionTokenCode, string authCodeVerifier)
         {
-            const string url = "";
+            const string url = "https://accounts.nintendo.com/connect/1.0.0/api/session_token";
             using var request = new HttpRequestMessage(HttpMethod.Post, url);
 
             request.Headers.Add("Accept-Language", "en-US");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("Host", "accounts.nintendo.com");
 
             var body = new Dictionary<string, string>
             {
+                {"client_id", "71b963c1b7b6d119"},
                 {"session_token_code", sessionTokenCode},
                 {"session_token_code_verifier", authCodeVerifier}
             };
@@ -113,7 +119,7 @@ namespace Splatoon2StreamingWidget
             var guid = Guid.NewGuid().ToString();
 
             // access token 取得
-            const string url = "";
+            const string url = "https://accounts.nintendo.com/connect/1.0.0/api/token";
 
             var request = new HttpRequestMessage(HttpMethod.Post, url);
 
@@ -121,9 +127,12 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("Host", "accounts.nintendo.com");
 
             var body = new Dictionary<string, string>
             {
+                {"client_id", "71b963c1b7b6d119"},
                 {"session_token", sessionToken},
                 {"grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer-session-token"}
             };
@@ -160,7 +169,7 @@ namespace Splatoon2StreamingWidget
             }
 
             // user data 取得
-            const string url2 = "";
+            const string url2 = "https://api.accounts.nintendo.com/2.0.0/users/me";
             request = new HttpRequestMessage(HttpMethod.Get, url2);
 
             request.Headers.Add("Accept-Language", "ja-JP");
@@ -168,6 +177,8 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Authorization", "Bearer " + accessToken);
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("Host", "api.accounts.nintendo.com");
 
             if (IsBodyEmpty(accessToken))
             {
@@ -196,7 +207,7 @@ namespace Splatoon2StreamingWidget
             }
 
             // 新 access token 取得
-            const string url3 = "";
+            const string url3 = "https://api-lp1.znc.srv.nintendo.net/v1/Account/Login";
 
             request = new HttpRequestMessage(HttpMethod.Post, url3);
 
@@ -206,6 +217,9 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Accept-Encoding", "gzip");
             request.Headers.Add("Authorization", "Bearer");
             request.Headers.Add("X-Platform", "Android");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("Host", "api-lp1.znc.srv.nintendo.net");
+            request.Headers.Add("X-ProductVersion", "2.1.1");
 
             var flapgNSO = await CallFlapgAPI(accessToken, guid, timeStamp, "nso");
 
@@ -260,7 +274,7 @@ namespace Splatoon2StreamingWidget
             var flapgApp = await CallFlapgAPI(idToken, guid, timeStamp, "app");
 
             // splatoon access token 取得
-            const string url4 = "";
+            const string url4 = "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken";
 
             request = new HttpRequestMessage(HttpMethod.Post, url4);
 
@@ -269,6 +283,9 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Accept-Encoding", "gzip");
             request.Headers.Add("Authorization", "Bearer " + idToken);
             request.Headers.Add("X-Platform", "Android");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("Host", "api-lp1.znc.srv.nintendo.net");
+            request.Headers.Add("X-ProductVersion", "2.1.1");
 
             if (IsBodyEmpty(idToken))
             {
@@ -282,6 +299,7 @@ namespace Splatoon2StreamingWidget
                     "parameter",
                     new Dictionary<string, string>
                     {
+                        {"id", "5741031244955648"},
                         {"f", flapgApp.f},
                         {"registrationToken", flapgApp.p1},
                         {"timestamp", flapgApp.p2},
@@ -322,7 +340,7 @@ namespace Splatoon2StreamingWidget
             }
 
             // iksm_session 取得
-            const string url5 = "";
+            const string url5 = "https://app.splatoon2.nintendo.net/?lang=en-US";
 
             request = new HttpRequestMessage(HttpMethod.Get, url5);
 
@@ -334,6 +352,8 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("X-IsAnalyticsOptedIn", "false");
             request.Headers.Add("Connection", "keep-alive");
             request.Headers.Add("DNT", "0");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("Host", "app.splatoon2.nintendo.net");
 
             if (IsBodyEmpty(splatoonAccessToken))
             {
@@ -344,7 +364,7 @@ namespace Splatoon2StreamingWidget
             try
             {
                 var cookies = await HttpManager.GetCookieContainer(request);
-                var responseCookies = cookies.GetCookies(new Uri("")).Cast<Cookie>();
+                var responseCookies = cookies.GetCookies(new Uri("https://app.splatoon2.nintendo.net/")).Cast<Cookie>();
                 return responseCookies.First().Value;
             }
             catch (HttpRequestException)
@@ -365,7 +385,7 @@ namespace Splatoon2StreamingWidget
 
         public static async Task<SplatNet2DataStructure.FlapgResult.FlapgInnerResult> CallFlapgAPI(string idToken, string guid, long timeStamp, string type)
         {
-            const string url = "";
+            const string url = "https://flapg.com/ika2/api/login?public";
 
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
@@ -396,11 +416,11 @@ namespace Splatoon2StreamingWidget
 
         public static async Task<string> GetHashFromS2SAPI(string idToken, long timeStamp)
         {
-            const string url = "";
+            const string url = "https://elifessler.com/s2s/api/gen2";
 
             using var request = new HttpRequestMessage(HttpMethod.Post, url);
 
-            request.Headers.Add("User-Agent", "" + UpdateManager.VersionNumber);
+            request.Headers.Add("User-Agent", "telegram-splotoon2-bot/0.4.3");
 
             var body = new Dictionary<string, string>
             {

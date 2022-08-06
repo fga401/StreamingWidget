@@ -115,14 +115,14 @@ namespace Splatoon2StreamingWidget
                 var result = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.Records>(ApiUriPrefix + "records", Cookie);
                 udemaeData = result.records.player;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"records\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"records\". {0}", e));
                 return false;
             }
-            catch (JsonException)
+            catch (JsonException e)
             {
-                await LogManager.WriteLogAsync("Failed to convert \"records\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to convert \"records\". {0}", e));
                 return false;
             }
 
@@ -142,14 +142,14 @@ namespace Splatoon2StreamingWidget
             {
                 powerData = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.XPowerRanking>(ApiUriPrefix + "x_power_ranking/" + GetSeason() + "/summary", Cookie);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"XPowerRanking\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"XPowerRanking\". {0}", e));
                 return false;
             }
-            catch (JsonException)
+            catch (JsonException e)
             {
-                await LogManager.WriteLogAsync("Failed to convert \"XPowerRanking\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to convert \"XPowerRanking\". {0}", e));
                 return false;
             }
 
@@ -169,14 +169,14 @@ namespace Splatoon2StreamingWidget
                 var result2 = await HttpManager.GetDeserializedJsonAsyncWithCookieContainer<SplatNet2DataStructure.Results>(ApiUriPrefix + "results", Cookie);
                 battleData = result2.results;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"results\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"results\". {0}", e));
                 return false;
             }
-            catch (JsonException)
+            catch (JsonException e)
             {
-                await LogManager.WriteLogAsync("Failed to convert \"results\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to convert \"results\". {0}", e));
                 return false;
             }
 

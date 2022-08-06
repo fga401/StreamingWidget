@@ -16,10 +16,10 @@ namespace Splatoon2StreamingWidget
 {
     // https://github.com/frozenpandaman/splatnet2statink/blob/master/iksm.py
     // https://salmonia.mydns.jp/
-    public static class SplatNet2SessionToken
+    public class SplatNet2SessionToken
     {
         private static long GetUnixTime() => (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-        private const string appVersion = "2.1.1";
+        private const string appVersion = "2.2.0";
 
         /// <summary>
         /// Generate login URL
@@ -68,11 +68,15 @@ namespace Splatoon2StreamingWidget
             const string url = "https://accounts.nintendo.com/connect/1.0.0/api/session_token";
             using var request = new HttpRequestMessage(HttpMethod.Post, url);
 
+            string version = DataManager.LoadConfig().version;
+            if (version == null || version == "") version = appVersion;
+
             request.Headers.Add("Accept-Language", "en-US");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Connection", "Keep-Alive");
+            request.Headers.Add("Connection-Type", "application/x-www-form-urlencoded");
             request.Headers.Add("Accept-Encoding", "gzip");
-            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + version + " NASDKAPI Android");
             request.Headers.Add("Host", "accounts.nintendo.com");
 
             var body = new Dictionary<string, string>
@@ -88,23 +92,21 @@ namespace Splatoon2StreamingWidget
                 return "";
             }
 
-            var json = JsonConvert.SerializeObject(body);
-
-            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            request.Content = new FormUrlEncodedContent(body);
 
             try
             {
                 var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.SessionToken>(request);
                 return res.session_token;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"session token\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"session token\". {0}", e));
                 return "";
             }
-            catch (InvalidDataException)
+            catch (InvalidDataException e)
             {
-                await LogManager.WriteLogAsync("Failed to decompress \"session token\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to decompress \"session token\". {0}", e));
                 return "";
             }
         }
@@ -118,6 +120,9 @@ namespace Splatoon2StreamingWidget
             var timeStamp = GetUnixTime();
             var guid = Guid.NewGuid().ToString();
 
+            string version = DataManager.LoadConfig().version;
+            if (version == null || version == "") version = appVersion;
+
             // access token 取得
             const string url = "https://accounts.nintendo.com/connect/1.0.0/api/token";
 
@@ -127,7 +132,7 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
-            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + version + " NASDKAPI Android");
             request.Headers.Add("Host", "accounts.nintendo.com");
 
             var body = new Dictionary<string, string>
@@ -153,14 +158,14 @@ namespace Splatoon2StreamingWidget
                 var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.AccessToken>(request);
                 accessToken = res.access_token;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"access token\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"access token\". {0}", e));
                 return "";
             }
-            catch (InvalidDataException)
+            catch (InvalidDataException e)
             {
-                await LogManager.WriteLogAsync("Failed to decompress \"access token\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to decompress \"access token\". {0}", e));
                 return "";
             }
             finally
@@ -177,7 +182,7 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Authorization", "Bearer " + accessToken);
             request.Headers.Add("Connection", "Keep-Alive");
             request.Headers.Add("Accept-Encoding", "gzip");
-            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + version + " NASDKAPI Android");
             request.Headers.Add("Host", "api.accounts.nintendo.com");
 
             if (IsBodyEmpty(accessToken))
@@ -191,14 +196,14 @@ namespace Splatoon2StreamingWidget
             {
                 userInfo = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.UserInfo>(request);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"user data\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"user data\". {0}", e));
                 return "";
             }
-            catch (InvalidDataException)
+            catch (InvalidDataException e)
             {
-                await LogManager.WriteLogAsync("Failed to decompress \"user data\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to decompress \"user data\". {0}", e));
                 return "";
             }
             finally
@@ -217,9 +222,9 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Accept-Encoding", "gzip");
             request.Headers.Add("Authorization", "Bearer");
             request.Headers.Add("X-Platform", "Android");
-            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + version + " NASDKAPI Android");
             request.Headers.Add("Host", "api-lp1.znc.srv.nintendo.net");
-            request.Headers.Add("X-ProductVersion", "2.1.1");
+            request.Headers.Add("X-ProductVersion", version);
 
             var flapgNSO = await CallFlapgAPI(accessToken, guid, timeStamp, "nso");
 
@@ -256,14 +261,14 @@ namespace Splatoon2StreamingWidget
                 var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.SplatoonToken>(request);
                 idToken = res.result.webApiServerCredential.accessToken;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"id token\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"id token\". {0}", e));
                 return "";
             }
-            catch (InvalidDataException)
+            catch (InvalidDataException e)
             {
-                await LogManager.WriteLogAsync("Failed to decompress \"id token\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to decompress \"id token\". {0}", e));
                 return "";
             }
             finally
@@ -283,7 +288,7 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("Accept-Encoding", "gzip");
             request.Headers.Add("Authorization", "Bearer " + idToken);
             request.Headers.Add("X-Platform", "Android");
-            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + version + " NASDKAPI Android");
             request.Headers.Add("Host", "api-lp1.znc.srv.nintendo.net");
             request.Headers.Add("X-ProductVersion", "2.1.1");
 
@@ -324,14 +329,14 @@ namespace Splatoon2StreamingWidget
                 var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.WebServiceToken>(request);
                 splatoonAccessToken = res.result.accessToken;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"splatoon access token\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"splatoon access token\". {0}", e));
                 return "";
             }
-            catch (InvalidDataException)
+            catch (InvalidDataException e)
             {
-                await LogManager.WriteLogAsync("Failed to decompress \"session token\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to decompress \"session token\". {0}", e));
                 return "";
             }
             finally
@@ -352,7 +357,7 @@ namespace Splatoon2StreamingWidget
             request.Headers.Add("X-IsAnalyticsOptedIn", "false");
             request.Headers.Add("Connection", "keep-alive");
             request.Headers.Add("DNT", "0");
-            request.Headers.Add("User-Agent", "OnlineLounge/" + appVersion + " NASDKAPI Android");
+            request.Headers.Add("User-Agent", "OnlineLounge/" + version + " NASDKAPI Android");
             request.Headers.Add("Host", "app.splatoon2.nintendo.net");
 
             if (IsBodyEmpty(splatoonAccessToken))
@@ -367,14 +372,14 @@ namespace Splatoon2StreamingWidget
                 var responseCookies = cookies.GetCookies(new Uri("https://app.splatoon2.nintendo.net/")).Cast<Cookie>();
                 return responseCookies.First().Value;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"iksm session\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"iksm session\". {0}", e));
                 return "";
             }
-            catch (IndexOutOfRangeException)
+            catch (IndexOutOfRangeException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"cookie\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"cookie\". {0}", e));
                 return "";
             }
             finally
@@ -407,9 +412,9 @@ namespace Splatoon2StreamingWidget
                 var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.FlapgResult>(request);
                 return res.result;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"f\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"f\". {0}", e));
                 return new SplatNet2DataStructure.FlapgResult.FlapgInnerResult();
             }
         }
@@ -434,16 +439,17 @@ namespace Splatoon2StreamingWidget
                 return "";
             }
 
-            request.Content = new StringContent(await new FormUrlEncodedContent(body).ReadAsStringAsync(), Encoding.UTF8, "application/x-www-form-urlencoded");
+            // request.Content = new StringContent(await new FormUrlEncodedContent(body).ReadAsStringAsync(), Encoding.UTF8, "application/x-www-form-urlencoded");
+            request.Content = new FormUrlEncodedContent(body);
 
             try
             {
                 var res = await HttpManager.GetAutoDeserializedJsonAsync<SplatNet2DataStructure.S2SResult>(request);
                 return res.hash;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
-                await LogManager.WriteLogAsync("Failed to get \"hash\"");
+                await LogManager.WriteLogAsync(String.Format("Failed to get \"hash\". {0}", e));
                 return "";
             }
         }

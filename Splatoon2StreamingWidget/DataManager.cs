@@ -12,6 +12,7 @@ namespace Splatoon2StreamingWidget
         public string session_token { get; set; }
         public string iksm_session { get; set; }
         public string principal_id { get; set; }
+        public string version { get; set; }
     }
 
     static class DataManager

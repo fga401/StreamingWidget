@@ -51,7 +51,8 @@ namespace Splatoon2StreamingWidget
             {
                 json = await response.Content.ReadAsStringAsync();
             }
-
+            await LogManager.WriteLogAsync(String.Format("request: {0}", request));
+            await LogManager.WriteLogAsync(String.Format("response: {0}", response));
             return JsonConvert.DeserializeObject<TJson>(json);
         }
 
